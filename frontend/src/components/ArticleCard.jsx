@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ExternalLink,
   Clock,
@@ -7,10 +7,26 @@ import {
   User,
   Calendar,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance, parseISO } from "date-fns";
 
 const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [, forceUpdate] = useState({});
+
+  // Force re-render every 3 seconds to update timestamps
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceUpdate({}); // Force component to re-render
+    }, 3000); // Update every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update timestamp when article data changes
+  useEffect(() => {
+    // This will trigger a re-render whenever the article prop changes
+    // which happens when the articles list is updated
+  }, [article]);
 
   const handleToggleRead = async () => {
     setIsLoading(true);
@@ -34,9 +50,41 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
+
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    } catch {
+      // Handle different date formats more robustly
+      let dateObj;
+
+      // If it's a number (timestamp), convert it
+      if (typeof dateString === "number") {
+        dateObj = new Date(dateString < 1e12 ? dateString * 1000 : dateString);
+      } else if (/^\d+$/.test(String(dateString))) {
+        // String of digits (timestamp)
+        const timestamp = Number(dateString);
+        dateObj = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp);
+      } else if (dateString.includes("T") || dateString.includes("Z")) {
+        // ISO format string
+        dateObj = parseISO(dateString);
+      } else {
+        // Fallback: assume UTC time and convert properly
+        // Format like "2025-08-30 08:07:00" should be treated as UTC
+        const utcDateString = dateString.replace(" ", "T") + "Z";
+        dateObj = new Date(utcDateString);
+      }
+
+      // Use current time for real-time calculation
+      const now = new Date();
+      return formatDistance(dateObj, now, {
+        addSuffix: true,
+        includeSeconds: true,
+      });
+    } catch (error) {
+      console.error(
+        "Date parsing error:",
+        error,
+        "for dateString:",
+        dateString
+      );
       return dateString;
     }
   };
