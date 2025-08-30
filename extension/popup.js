@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
         saveBtn.textContent = 'Save Current Page';
 
         if (response && response.success) {
-          statusDiv.textContent = 'Saved successfully! ✓';
+          statusDiv.textContent = 'Saved successfully!';
           statusDiv.className = 'status-success';
         } else if (response && response.data && response.data.error === 'This URL has already been saved.') {
-          statusDiv.textContent = 'Already saved! ✓';
+          statusDiv.textContent = 'Already saved!';
           statusDiv.className = 'status-success';
         } else if (response && response.data && response.data.error) {
           statusDiv.textContent = `Error: ${response.data.error}`;
