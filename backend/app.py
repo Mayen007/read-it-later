@@ -1,9 +1,8 @@
+from routes.articles import articles_bp
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
+from extensions import db
 import os
-
-from routes.articles import articles_bp
 
 app = Flask(__name__)
 
@@ -17,19 +16,21 @@ else:
 # Recommended SQLAlchemy settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+# Initialize extensions
+db.init_app(app)
 
 # Enable CORS for all routes
 CORS(app)
 
+# Import and register blueprints after db is initialized
 app.register_blueprint(articles_bp, url_prefix='/api/articles')
 
 
 def init_db():
     """Initialize the database tables using SQLAlchemy models."""
-    from models.article import Article
-
-    db.create_all()
+    with app.app_context():
+        from models.article import Article
+        db.create_all()
 
 
 if __name__ == '__main__':

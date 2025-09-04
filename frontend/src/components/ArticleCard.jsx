@@ -11,22 +11,21 @@ import { formatDistance, parseISO } from "date-fns";
 
 const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [, forceUpdate] = useState({});
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Force re-render every 3 seconds to update timestamps
+  // Update current time every second for real-time timestamp updates
   useEffect(() => {
     const interval = setInterval(() => {
-      forceUpdate({}); // Force component to re-render
-    }, 3000); // Update every 3 seconds
+      setCurrentTime(new Date());
+    }, 1000); // Update every second for more accurate timestamps
 
     return () => clearInterval(interval);
   }, []);
 
-  // Update timestamp when article data changes
+  // Force immediate update when article changes (new article added)
   useEffect(() => {
-    // This will trigger a re-render whenever the article prop changes
-    // which happens when the articles list is updated
-  }, [article]);
+    setCurrentTime(new Date());
+  }, [article.saved_date, article.id]); // Trigger when saved_date or id changes
 
   const handleToggleRead = async () => {
     setIsLoading(true);
@@ -52,7 +51,6 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
     if (!dateString) return "";
 
     try {
-      // Handle different date formats more robustly
       let dateObj;
 
       // If it's a number (timestamp), convert it
@@ -62,19 +60,22 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
         // String of digits (timestamp)
         const timestamp = Number(dateString);
         dateObj = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp);
-      } else if (dateString.includes("T") || dateString.includes("Z")) {
-        // ISO format string
-        dateObj = parseISO(dateString);
       } else {
-        // Fallback: assume UTC time and convert properly
-        // Format like "2025-08-30 08:07:00" should be treated as UTC
-        const utcDateString = dateString.replace(" ", "T") + "Z";
-        dateObj = new Date(utcDateString);
+        // Handle ISO format string
+        // If it doesn't end with Z, assume it's UTC and add Z
+        let isoString = dateString;
+        if (
+          !isoString.endsWith("Z") &&
+          !isoString.includes("+") &&
+          !isoString.includes("-", 10)
+        ) {
+          isoString = isoString + "Z";
+        }
+        dateObj = parseISO(isoString);
       }
 
-      // Use current time for real-time calculation
-      const now = new Date();
-      return formatDistance(dateObj, now, {
+      // Use currentTime state for real-time calculation
+      return formatDistance(dateObj, currentTime, {
         addSuffix: true,
         includeSeconds: true,
       });

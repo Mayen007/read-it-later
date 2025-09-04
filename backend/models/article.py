@@ -1,4 +1,4 @@
-from app import db
+from extensions import db
 from datetime import datetime
 
 
@@ -24,7 +24,7 @@ class Article(db.Model):
             'excerpt': self.excerpt,
             'author': self.author,
             'published_date': self.published_date,
-            'saved_date': self.saved_date.isoformat() if self.saved_date else None,
+            'saved_date': self.saved_date.isoformat() + 'Z' if self.saved_date else None,
             'tags': self.tags,
             'is_read': self.is_read,
             'thumbnail_url': self.thumbnail_url,
