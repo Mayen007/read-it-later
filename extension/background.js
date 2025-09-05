@@ -1,6 +1,9 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'saveLink') {
-    fetch('http://localhost:5000/api/articles', {
+    // Use production URL when deployed
+    const apiUrl = 'https://readitt.netlify.app/.netlify/functions/api/articles';
+
+    fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: message.url })
@@ -13,6 +16,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
       })
       .catch(err => sendResponse({ success: false, data: { error: 'Network error' } }));
-    return true; // keep the message channel open for async response
+    return true;
   }
 });

@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-// Use relative URL since we have Vite proxy configured
-const raw = import.meta.env.VITE_API_URL || '';
-const backend = raw.replace(/\/$/, '');
-const API_BASE_URL = backend ? (backend.endsWith('/api') ? backend : `${backend}/api`) : '/api';
+// Use different API URLs for development and production
+const isDevelopment = import.meta.env.DEV;
+const API_BASE_URL = isDevelopment
+  ? '/api'  // Uses Vite proxy in development
+  : '/.netlify/functions/api';  // Uses Netlify Functions in production
 
 const api = axios.create({
   baseURL: API_BASE_URL,

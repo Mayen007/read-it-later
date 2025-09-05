@@ -1,8 +1,9 @@
 from routes.articles import articles_bp
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from extensions import db
 import os
+import json
 
 app = Flask(__name__)
 
