@@ -1,0 +1,17 @@
+# Read-it-Later - Simplified Netlify Configuration
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+  functions = "../netlify/functions"
+  
+[build.environment]
+  PYTHON_VERSION = "3.9"
+
+# CORS headers for all function responses
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
