@@ -1,3 +1,4 @@
+# Netlify configuration for Read-it-Later app
 [build]
   base = "frontend"
   command = "npm run build"
