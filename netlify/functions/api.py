@@ -23,7 +23,7 @@ db.init_app(app)
 CORS(app)
 
 # Register blueprints
-app.register_blueprint(articles_bp, url_prefix='/api/articles')
+app.register_blueprint(articles_bp, url_prefix='/articles')
 
 # Initialize database
 with app.app_context():
@@ -57,11 +57,27 @@ def handler(event, context):
         import base64
         body = base64.b64decode(body).decode('utf-8')
 
+    # Get the path and remove any leading path segments that Netlify adds
+    path = event.get('path', '/')
+
+    # Debug logging
+    print(f"Original path: {path}")
+
+    # The path will be something like "/api/articles"
+    # We need to route it to the Flask app correctly
+    if path.startswith('/api'):
+        path = path[4:]  # Remove '/api' prefix
+
+    # Ensure we have a leading slash
+    if not path.startswith('/'):
+        path = '/' + path
+
+    print(f"Processed path: {path}")
+
     # Convert Netlify event to WSGI environ
     environ = {
         'REQUEST_METHOD': event.get('httpMethod', 'GET'),
-        # Remove /api prefix
-        'PATH_INFO': event.get('path', '/').replace('/api', ''),
+        'PATH_INFO': path,
         'QUERY_STRING': query_string,
         'CONTENT_TYPE': event.get('headers', {}).get('content-type', 'application/json'),
         'CONTENT_LENGTH': str(len(body.encode('utf-8'))),

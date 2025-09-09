@@ -2,16 +2,26 @@ import axios from 'axios';
 
 // Use different API URLs for development and production
 const isDevelopment = import.meta.env.DEV;
-const API_BASE_URL = isDevelopment
-  ? '/api'  // Uses Vite proxy in development
-  : '/.netlify/functions/api';  // Uses Netlify Functions in production
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+let api;
+
+if (isDevelopment) {
+  // Development: Use Vite proxy to local Flask server
+  api = axios.create({
+    baseURL: '/api',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+} else {
+  // Production: Use Netlify Functions directly
+  api = axios.create({
+    baseURL: '/.netlify/functions',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
 
 export const articlesAPI = {
   // Get all articles
@@ -20,11 +30,11 @@ export const articlesAPI = {
   // Add a new article
   add: (url) => api.post('/articles', { url }),
 
-  // Update article (mark as read/unread)
-  update: (id, data) => api.put(`/articles/${id}`, data),
+  // Update article (mark as read/unread) - need to pass ID in path
+  update: (id, data) => api.put(`/articles?id=${id}`, data),
 
-  // Delete article
-  delete: (id) => api.delete(`/articles/${id}`),
+  // Delete article - need to pass ID in path
+  delete: (id) => api.delete(`/articles?id=${id}`),
 };
 
 export default api;
