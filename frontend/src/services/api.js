@@ -25,16 +25,16 @@ if (isDevelopment) {
 
 export const articlesAPI = {
   // Get all articles
-  getAll: () => api.get('/articles'),
+  getAll: () => api.get('/articles-simple'),
 
   // Add a new article
-  add: (url) => api.post('/articles', { url }),
+  add: (url) => api.post('/articles-simple', { url }),
 
   // Update article (mark as read/unread) - need to pass ID in path
-  update: (id, data) => api.put(`/articles?id=${id}`, data),
+  update: (id, data) => api.put(`/articles-simple?id=${id}`, data),
 
   // Delete article - need to pass ID in path
-  delete: (id) => api.delete(`/articles?id=${id}`),
+  delete: (id) => api.delete(`/articles-simple?id=${id}`),
 };
 
 export default api;
