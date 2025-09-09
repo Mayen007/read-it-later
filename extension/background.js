@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'saveLink') {
-    // Use production URL when deployed
-    const apiUrl = 'https://readitt.netlify.app/.netlify/functions/api/articles';
+    // Use the correct Netlify Functions endpoint
+    const apiUrl = 'https://readitt.netlify.app/.netlify/functions/articles';
 
     fetch(apiUrl, {
       method: 'POST',
