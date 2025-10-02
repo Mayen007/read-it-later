@@ -6,9 +6,11 @@ import axios from 'axios';
 
 // API configuration
 const isDevelopment = import.meta.env.DEV;
+// For development, use Vite proxy to Flask backend at /api
+// For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
 const apiBaseURL = isDevelopment
-  ? '/api'  // Development: proxy to local backend
-  : '/.netlify/functions';  // Production: Netlify Functions
+  ? '/api'
+  : 'https://your-flask-app.com/api';
 
 // Create axios instance
 const api = axios.create({
