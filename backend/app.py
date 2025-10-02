@@ -10,35 +10,37 @@ app = Flask(__name__)
 
 
 # Database configuration with proper error handling
-database_url = os.environ.get('DATABASE_URL')
+database_url = os.environ.get('DATABASE_URL', '').strip()
 
-# Handle empty or None DATABASE_URL
-if not database_url or database_url.strip() == '':
+# Handle malformed or empty DATABASE_URL
+if not database_url:
     database_url = 'sqlite:///articles.db'
     print("Warning: DATABASE_URL not set, using SQLite fallback")
 else:
+    # Clean up malformed URLs (remove psql prefix if present)
+    if database_url.startswith("psql '"):
+        database_url = database_url.replace("psql '", "").rstrip("'")
+        print("Cleaned malformed DATABASE_URL")
+
     # Handle Render.com DATABASE_URL format (postgres:// -> postgresql://)
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
-        print(f"Converted postgres:// to postgresql:// for DATABASE_URL")
+        print("Converted postgres:// to postgresql://")
+
+    # Validate URL format - if it doesn't look like a valid URL, fall back to SQLite
+    if not (database_url.startswith(('postgresql://', 'mysql://', 'sqlite://')) or '://' in database_url):
+        print(f"Invalid DATABASE_URL format: {database_url[:50]}")
+        database_url = 'sqlite:///articles.db'
+        print("Falling back to SQLite due to invalid DATABASE_URL")
 
 # Set database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-print(f"Using database: {database_url[:20]}...")
-
-# Recommended SQLAlchemy settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+print(f"Final database URI: {database_url[:30]}...")
 
 # Initialize extensions
-try:
-    db.init_app(app)
-    print("Database initialized successfully")
-except Exception as e:
-    print(f"Database initialization error: {e}")
-    # Try with SQLite as absolute fallback
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fallback.db'
-    db.init_app(app)
-    print("Using SQLite fallback database")
+db.init_app(app)
+print("Database initialized successfully")
 
 # Enable CORS for all routes
 CORS(app)
