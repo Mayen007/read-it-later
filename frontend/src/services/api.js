@@ -81,7 +81,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Updated article
    */
   markAsRead: (id, isRead = true) => {
-    return api.put(`/articles?id=${id}`, { is_read: isRead });
+    return api.put(`/articles/${id}`, { is_read: isRead });
   },
 
   /**
@@ -91,7 +91,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Updated article
    */
   update: (id, data) => {
-    return api.put(`/articles?id=${id}`, data);
+    return api.put(`/articles/${id}`, data);
   },
 
   /**
@@ -101,7 +101,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Updated article
    */
   updateTags: (id, tags) => {
-    return api.put(`/articles?id=${id}`, { tags });
+    return api.put(`/articles/${id}`, { tags });
   },
 
   /**
@@ -110,7 +110,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Success message
    */
   delete: (id) => {
-    return api.delete(`/articles?id=${id}`);
+    return api.delete(`/articles/${id}`);
   },
 
 };

@@ -135,7 +135,6 @@ dist/
 
 # Gatsby files
 .cache/
-public/
 
 # Storybook build outputs
 .out
@@ -177,3 +176,10 @@ $RECYCLE.BIN/
 *.crx
 *.pem
 web-ext-artifacts/
+
+# GitHub files
+.github/
+
+# Documentation
+ARCHITECTURE.md
+MIGRATION_PLAN.md

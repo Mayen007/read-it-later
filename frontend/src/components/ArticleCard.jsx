@@ -8,10 +8,12 @@ import {
   Calendar,
 } from "lucide-react";
 import { formatDistance, parseISO } from "date-fns";
+import ConfirmDialog from "./ConfirmDialog";
 
 const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Update current time every second for real-time timestamp updates
   useEffect(() => {
@@ -37,14 +39,21 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
     setIsLoading(false);
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this article?")) {
-      try {
-        await onDelete(article.id);
-      } catch (error) {
-        console.error("Error deleting article:", error);
-      }
+  const handleDelete = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteDialog(false);
+    try {
+      await onDelete(article.id);
+    } catch (error) {
+      console.error("Error deleting article:", error);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
   };
 
   const formatDate = (dateString) => {
@@ -158,6 +167,21 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
           </button>
         </div>
       </div>
+
+      {showDeleteDialog && (
+        <ConfirmDialog
+          isOpen={showDeleteDialog}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          title="Delete Article"
+          message={`Are you sure you want to delete "${
+            article.title || "this article"
+          }"?`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          type="danger"
+        />
+      )}
     </div>
   );
 };
