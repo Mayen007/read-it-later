@@ -38,9 +38,25 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print(f"Final database URI: {database_url[:30]}...")
 
-# Initialize extensions
-db.init_app(app)
-print("Database initialized successfully")
+# Initialize extensions with error handling
+try:
+    db.init_app(app)
+    print("Database initialized successfully")
+except ImportError as e:
+    if 'psycopg2' in str(e):
+        print(f"PostgreSQL driver error: {e}")
+        print("Falling back to SQLite...")
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fallback.db'
+        db.init_app(app)
+        print("Using SQLite fallback database")
+    else:
+        raise e
+except Exception as e:
+    print(f"Database initialization error: {e}")
+    print("Falling back to SQLite...")
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fallback.db'
+    db.init_app(app)
+    print("Using SQLite fallback database")
 
 # Enable CORS for all routes
 CORS(app)
