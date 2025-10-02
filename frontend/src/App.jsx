@@ -23,9 +23,16 @@ function App() {
       setArticles(response.data);
     } catch (error) {
       console.error("Error loading articles:", error);
-      setError(
-        "Failed to load articles. Make sure the backend server is running."
-      );
+      const isDev = import.meta.env.DEV;
+      if (isDev) {
+        setError(
+          "Failed to load articles. Make sure the backend server is running on port 5000."
+        );
+      } else {
+        setError(
+          "Failed to load articles. The service might be temporarily unavailable. Please try again in a moment."
+        );
+      }
     } finally {
       setIsLoading(false);
     }

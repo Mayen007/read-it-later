@@ -59,7 +59,7 @@ export const articlesAPI = {
     }
 
     const queryString = params.toString();
-    const url = `/articles-clean${queryString ? `?${queryString}` : ''}`;
+    const url = `/articles${queryString ? `?${queryString}` : ''}`;
 
     return api.get(url);
   },
@@ -71,7 +71,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Created article
    */
   add: (url, tags = []) => {
-    return api.post('/articles-clean', { url, tags });
+    return api.post('/articles', { url, tags });
   },
 
   /**
@@ -81,7 +81,17 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Updated article
    */
   markAsRead: (id, isRead = true) => {
-    return api.put(`/articles-clean?id=${id}`, { is_read: isRead });
+    return api.put(`/articles?id=${id}`, { is_read: isRead });
+  },
+
+  /**
+   * Update article (alias for markAsRead for backward compatibility)
+   * @param {number} id - Article ID
+   * @param {Object} data - Update data
+   * @returns {Promise<Object>} Updated article
+   */
+  update: (id, data) => {
+    return api.put(`/articles?id=${id}`, data);
   },
 
   /**
@@ -91,7 +101,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Updated article
    */
   updateTags: (id, tags) => {
-    return api.put(`/articles-clean?id=${id}`, { tags });
+    return api.put(`/articles?id=${id}`, { tags });
   },
 
   /**
@@ -100,7 +110,7 @@ export const articlesAPI = {
    * @returns {Promise<Object>} Success message
    */
   delete: (id) => {
-    return api.delete(`/articles-clean?id=${id}`);
+    return api.delete(`/articles?id=${id}`);
   },
 
 };

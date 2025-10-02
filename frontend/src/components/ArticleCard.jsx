@@ -92,11 +92,17 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   return (
     <div className={`article-card ${article.is_read ? "read" : "unread"}`}>
-      {article.thumbnail_url && (
-        <div className="article-thumbnail">
-          <img src={article.thumbnail_url} alt={article.title} />
-        </div>
-      )}
+      <div className="article-thumbnail">
+        <img
+          src={article.thumbnail_url || "/logo.png"}
+          alt={article.title}
+          onError={(e) => {
+            if (e.target.src !== "/logo.png") {
+              e.target.src = "/logo.png";
+            }
+          }}
+        />
+      </div>
 
       <div className="article-content">
         <h3 className="article-title">

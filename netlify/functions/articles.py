@@ -329,17 +329,22 @@ def extract_metadata(url):
                     thumbnail_url = urljoin(url, thumbnail_url)
                     break
 
+        # Use default logo if no thumbnail found
+        default_logo = 'https://readitt.netlify.app/logo.png'
+
         return {
             'title': title or 'Untitled',
             'excerpt': excerpt or '',
             'author': author or '',
-            'thumbnail_url': thumbnail_url or ''
+            'thumbnail_url': thumbnail_url or default_logo
         }
 
     except Exception as e:
+        # Use default logo on error
+        default_logo = 'https://readitt.netlify.app/logo.png'
         return {
             'title': f'Error: {str(e)}',
             'excerpt': 'Failed to extract content from URL',
             'author': '',
-            'thumbnail_url': ''
+            'thumbnail_url': default_logo
         }

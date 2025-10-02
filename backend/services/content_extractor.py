@@ -6,7 +6,7 @@ from urllib.parse import urljoin, urlparse
 # Enhanced metadata extractor for a given URL
 
 # Default fallback thumbnail - use the application logo
-DEFAULT_THUMBNAIL = "http://localhost:3001/logo.png"
+DEFAULT_THUMBNAIL = "/logo.png"
 
 
 def extract_metadata(url):

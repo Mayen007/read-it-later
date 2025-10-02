@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'saveLink') {
-    // Use the simplified Netlify Function for testing
-    const apiUrl = 'https://readitt.netlify.app/.netlify/functions/articles-simple';
+    // Use the main Netlify Function
+    const apiUrl = 'https://readitt.netlify.app/.netlify/functions/articles';
 
     fetch(apiUrl, {
       method: 'POST',

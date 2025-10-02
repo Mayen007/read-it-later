@@ -330,6 +330,13 @@ body {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s;
+  background-color: var(--bg-primary);
+}
+
+.article-thumbnail img[src="/logo.png"] {
+  object-fit: contain;
+  padding: 2rem;
+  background-color: var(--bg-secondary);
 }
 
 .article-card:hover .article-thumbnail img {
