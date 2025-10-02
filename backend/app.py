@@ -4,6 +4,7 @@ from flask_cors import CORS
 from extensions import db
 import os
 import json
+import sys
 
 app = Flask(__name__)
 
@@ -11,18 +12,33 @@ app = Flask(__name__)
 # Database configuration with proper error handling
 database_url = os.environ.get('DATABASE_URL')
 
-# Handle Render.com DATABASE_URL format (postgres:// -> postgresql://)
-if database_url and database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+# Handle empty or None DATABASE_URL
+if not database_url or database_url.strip() == '':
+    database_url = 'sqlite:///articles.db'
+    print("Warning: DATABASE_URL not set, using SQLite fallback")
+else:
+    # Handle Render.com DATABASE_URL format (postgres:// -> postgresql://)
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        print(f"Converted postgres:// to postgresql:// for DATABASE_URL")
 
-# Set database URI with fallback
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///articles.db'
+# Set database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+print(f"Using database: {database_url[:20]}...")
 
 # Recommended SQLAlchemy settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
-db.init_app(app)
+try:
+    db.init_app(app)
+    print("Database initialized successfully")
+except Exception as e:
+    print(f"Database initialization error: {e}")
+    # Try with SQLite as absolute fallback
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fallback.db'
+    db.init_app(app)
+    print("Using SQLite fallback database")
 
 # Enable CORS for all routes
 CORS(app)
@@ -35,7 +51,13 @@ app.register_blueprint(articles_bp, url_prefix='/api/articles')
 
 @app.route('/health')
 def health_check():
-    return {'status': 'healthy', 'database': app.config['SQLALCHEMY_DATABASE_URI'][:20] + '...'}, 200
+    env_db_url = os.environ.get('DATABASE_URL', 'Not set')
+    return {
+        'status': 'healthy',
+        'database': app.config['SQLALCHEMY_DATABASE_URI'][:30] + '...',
+        'env_database_url': env_db_url[:30] + '...' if env_db_url != 'Not set' else 'Not set',
+        'python_version': f"{sys.version_info.major}.{sys.version_info.minor}"
+    }, 200
 
 
 def init_db():
