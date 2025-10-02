@@ -7,12 +7,10 @@ import json
 
 app = Flask(__name__)
 
-# Database configuration: use DATABASE_URL if provided, otherwise a local sqlite file
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///articles.db'
+
+# Unified database configuration: always use DATABASE_URL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:///articles.db')
 
 # Recommended SQLAlchemy settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
