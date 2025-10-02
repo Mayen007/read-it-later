@@ -8,9 +8,15 @@ import json
 app = Flask(__name__)
 
 
-# Unified database configuration: always use DATABASE_URL
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'sqlite:///articles.db')
+# Database configuration with proper error handling
+database_url = os.environ.get('DATABASE_URL')
+
+# Handle Render.com DATABASE_URL format (postgres:// -> postgresql://)
+if database_url and database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+# Set database URI with fallback
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///articles.db'
 
 # Recommended SQLAlchemy settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,6 +29,13 @@ CORS(app)
 
 # Import and register blueprints after db is initialized
 app.register_blueprint(articles_bp, url_prefix='/api/articles')
+
+# Health check endpoint for deployment
+
+
+@app.route('/health')
+def health_check():
+    return {'status': 'healthy', 'database': app.config['SQLALCHEMY_DATABASE_URI'][:20] + '...'}, 200
 
 
 def init_db():
