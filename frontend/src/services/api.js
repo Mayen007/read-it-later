@@ -10,7 +10,7 @@ const isDevelopment = import.meta.env.DEV;
 // For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
 const apiBaseURL = isDevelopment
   ? '/api'
-  : 'https://your-flask-app.com/api';
+  : 'https://readit-backend-r69u.onrender.com';
 
 // Create axios instance
 const api = axios.create({
