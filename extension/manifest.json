@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Read It Later",
   "version": "1.0",
-  "description": "Save links to your Read It Later app.",
+  "description": "Quickly save articles, blog posts, and web pages to your Read It Later app. Organize, search, and track your reading progress directly from Chrome. One-click saving, automatic metadata extraction, and seamless sync with your personal reading list.",
   "permissions": [
     "activeTab",
     "scripting"

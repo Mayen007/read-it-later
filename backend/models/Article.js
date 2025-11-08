@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Define the Article schema
 const articleSchema = new mongoose.Schema({
   url: { type: String, required: true, unique: true },
   title: { type: String, default: 'Untitled' },
@@ -12,4 +13,8 @@ const articleSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Article', articleSchema);
+// Create the Article model
+const Article = mongoose.model('Article', articleSchema);
+
+// Export the model
+module.exports = Article;

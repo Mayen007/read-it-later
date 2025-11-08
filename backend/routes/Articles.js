@@ -23,7 +23,12 @@ const extractMetadata = async (url) => {
 // GET /api/articles - List all articles
 router.get('/', async (req, res) => {
   try {
-    const articles = await Article.find().sort({ created_at: -1 });
+    const { search } = req.query;
+    let query = {};
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+    const articles = await Article.find(query).sort({ created_at: -1 });
     res.json(articles);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch articles' });

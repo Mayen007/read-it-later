@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import ArticleCard from "./ArticleCard";
 import ArticleFilters from "./ArticleFilters";
 import { BookOpen } from "lucide-react";
@@ -11,6 +11,8 @@ const ArticlesList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
+
+  const articleRefs = useRef({});
 
   const filteredArticles = useMemo(() => {
     let filtered = articles;
@@ -39,6 +41,17 @@ const ArticlesList = ({
       (a, b) => new Date(b.saved_date) - new Date(a.saved_date)
     );
   }, [articles, searchTerm, filter]);
+
+  // Scroll to first match when searchTerm changes
+  useEffect(() => {
+    if (searchTerm.trim() && filteredArticles.length > 0) {
+      const firstId = filteredArticles[0]._id;
+      const ref = articleRefs.current[firstId];
+      if (ref && ref.scrollIntoView) {
+        ref.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [searchTerm, filteredArticles]);
 
   const counts = {
     total: articles.length,
@@ -71,8 +84,8 @@ const ArticlesList = ({
         />
 
         {filteredArticles.length === 0 ? (
-          <div className="empty-state">
-            <BookOpen size={48} />
+          <div className="empty-state flex justify-center items-center flex-col">
+            <BookOpen size={48} className="flex justify-center items-center"/>
             {articles.length === 0 ? (
               <>
                 <h3>No articles saved yet</h3>
@@ -88,12 +101,16 @@ const ArticlesList = ({
         ) : (
           <div className="articles-grid">
             {filteredArticles.map((article) => (
-              <ArticleCard
+              <div
                 key={article._id}
-                article={article}
-                onToggleRead={onToggleRead}
-                onDelete={onDeleteArticle}
-              />
+                ref={(el) => (articleRefs.current[article._id] = el)}
+              >
+                <ArticleCard
+                  article={article}
+                  onToggleRead={onToggleRead}
+                  onDelete={onDeleteArticle}
+                />
+              </div>
             ))}
           </div>
         )}
