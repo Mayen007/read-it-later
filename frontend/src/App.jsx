@@ -48,14 +48,14 @@ function App() {
     await articlesAPI.update(id, { is_read: isRead });
     setArticles((prev) =>
       prev.map((article) =>
-        article.id === id ? { ...article, is_read: isRead } : article
+        article._id === id ? { ...article, is_read: isRead } : article
       )
     );
   };
 
   const handleDeleteArticle = async (id) => {
     await articlesAPI.delete(id);
-    setArticles((prev) => prev.filter((article) => article.id !== id));
+    setArticles((prev) => prev.filter((article) => article._id !== id));
   };
 
   return (

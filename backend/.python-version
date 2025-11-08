@@ -1,5 +1,0 @@
-# Render.com deployment configuration
-
-# This file specifies Python version for Render to avoid Python 3.13 issues with psycopg2
-
-python_version = "3.11"

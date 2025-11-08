@@ -41,35 +41,37 @@ const AddArticleForm = ({ onAddArticle }) => {
   };
 
   return (
-    <div className="add-article-form">
-      <h2>
-        <Link size={20} />
-        Add New Article
-      </h2>
+    <>
+      <div className="add-article-form">
+        <h2>
+          <Link size={20} />
+          Add New Article
+        </h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter article URL..."
-            disabled={isLoading}
-            className="url-input"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !url.trim()}
-            className="btn-add"
-          >
-            <Plus size={16} />
-            {isLoading ? "Adding..." : "Add Article"}
-          </button>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter article URL..."
+              disabled={isLoading}
+              className="url-input"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !url.trim()}
+              className="btn-add"
+            >
+              <Plus size={16} />
+              {isLoading ? "Adding..." : "Add Article"}
+            </button>
+          </div>
 
-        {error && <div className="error-message">{error}</div>}
-      </form>
-    </div>
+          {error && <div className="error-message">{error}</div>}
+        </form>
+      </div>
+    </>
   );
 };
 

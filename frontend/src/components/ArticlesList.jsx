@@ -48,53 +48,57 @@ const ArticlesList = ({
 
   if (isLoading) {
     return (
-      <div className="articles-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading articles...</p>
-      </div>
+      <>
+        <div className="articles-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading articles...</p>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="articles-list">
-      <ArticleFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        filter={filter}
-        onFilterChange={setFilter}
-        totalCount={counts.total}
-        readCount={counts.read}
-        unreadCount={counts.unread}
-      />
+    <>
+      <div className="articles-list">
+        <ArticleFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          filter={filter}
+          onFilterChange={setFilter}
+          totalCount={counts.total}
+          readCount={counts.read}
+          unreadCount={counts.unread}
+        />
 
-      {filteredArticles.length === 0 ? (
-        <div className="empty-state">
-          <BookOpen size={48} />
-          {articles.length === 0 ? (
-            <>
-              <h3>No articles saved yet</h3>
-              <p>Start by adding your first article using the form above!</p>
-            </>
-          ) : (
-            <>
-              <h3>No articles match your search</h3>
-              <p>Try adjusting your search terms or filters.</p>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="articles-grid">
-          {filteredArticles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              onToggleRead={onToggleRead}
-              onDelete={onDeleteArticle}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+        {filteredArticles.length === 0 ? (
+          <div className="empty-state">
+            <BookOpen size={48} />
+            {articles.length === 0 ? (
+              <>
+                <h3>No articles saved yet</h3>
+                <p>Start by adding your first article using the form above!</p>
+              </>
+            ) : (
+              <>
+                <h3>No articles match your search</h3>
+                <p>Try adjusting your search terms or filters.</p>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="articles-grid">
+            {filteredArticles.map((article) => (
+              <ArticleCard
+                key={article._id}
+                article={article}
+                onToggleRead={onToggleRead}
+                onDelete={onDeleteArticle}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

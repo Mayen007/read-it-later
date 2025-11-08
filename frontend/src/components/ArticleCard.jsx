@@ -32,7 +32,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const handleToggleRead = async () => {
     setIsLoading(true);
     try {
-      await onToggleRead(article.id, !article.is_read);
+      await onToggleRead(article._id, !article.is_read);
     } catch (error) {
       console.error("Error toggling read status:", error);
     }
@@ -46,7 +46,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const handleConfirmDelete = async () => {
     setShowDeleteDialog(false);
     try {
-      await onDelete(article.id);
+      await onDelete(article._id);
     } catch (error) {
       console.error("Error deleting article:", error);
     }
@@ -100,89 +100,93 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   };
 
   return (
-    <div className={`article-card ${article.is_read ? "read" : "unread"}`}>
-      <div className="article-thumbnail">
-        <img
-          src={article.thumbnail_url || "/logo.png"}
-          alt={article.title}
-          onError={(e) => {
-            if (e.target.src !== "/logo.png") {
-              e.target.src = "/logo.png";
-            }
-          }}
-        />
-      </div>
+    <>
+      <div className={`article-card ${article.is_read ? "read" : "unread"}`}>
+        <div className="article-thumbnail">
+          <img
+            src={article.thumbnail_url || "/logo.png"}
+            alt={article.title}
+            onError={(e) => {
+              if (e.target.src !== "/logo.png") {
+                e.target.src = "/logo.png";
+              }
+            }}
+          />
+        </div>
 
-      <div className="article-content">
-        <h3 className="article-title">
-          <a href={article.url} target="_blank" rel="noopener noreferrer">
-            {article.title || "Untitled Article"}
-            <ExternalLink size={14} />
-          </a>
-        </h3>
+        <div className="article-content">
+          <h3 className="article-title">
+            <a href={article.url} target="_blank" rel="noopener noreferrer">
+              {article.title || "Untitled Article"}
+              <ExternalLink size={14} />
+            </a>
+          </h3>
 
-        {article.excerpt && (
-          <p className="article-excerpt">{article.excerpt}</p>
+          {article.excerpt && (
+            <p className="article-excerpt">{article.excerpt}</p>
+          )}
+
+          <div className="article-meta">
+            {article.author && (
+              <span className="meta-item">
+                <User size={12} />
+                {article.author}
+              </span>
+            )}
+            {article.published_date && (
+              <span className="meta-item">
+                <Calendar size={12} />
+                {formatDate(article.published_date)}
+              </span>
+            )}
+            {article.saved_date && (
+              <span className="meta-item">
+                <Clock size={12} />
+                Saved {formatDate(article.saved_date)}
+              </span>
+            )}
+          </div>
+
+          <div className="article-actions">
+            <button
+              onClick={handleToggleRead}
+              disabled={isLoading}
+              className={`btn-toggle-read ${
+                article.is_read ? "read" : "unread"
+              }`}
+              title={article.is_read ? "Mark as unread" : "Mark as read"}
+            >
+              <Check size={16} />
+              {article.is_read ? "Mark Unread" : "Mark Read"}
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="btn-delete"
+              title="Delete article"
+            >
+              <Trash2 size={16} />
+              Delete
+            </button>
+          </div>
+        </div>
+
+        {showDeleteDialog && (
+          <ConfirmDialog
+            isOpen={showDeleteDialog}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            title="Delete Article"
+            message={`Are you sure you want to delete "${
+              article.title || "this article"
+            }"?`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            type="danger"
+          />
         )}
-
-        <div className="article-meta">
-          {article.author && (
-            <span className="meta-item">
-              <User size={12} />
-              {article.author}
-            </span>
-          )}
-          {article.published_date && (
-            <span className="meta-item">
-              <Calendar size={12} />
-              {formatDate(article.published_date)}
-            </span>
-          )}
-          {article.saved_date && (
-            <span className="meta-item">
-              <Clock size={12} />
-              Saved {formatDate(article.saved_date)}
-            </span>
-          )}
-        </div>
-
-        <div className="article-actions">
-          <button
-            onClick={handleToggleRead}
-            disabled={isLoading}
-            className={`btn-toggle-read ${article.is_read ? "read" : "unread"}`}
-            title={article.is_read ? "Mark as unread" : "Mark as read"}
-          >
-            <Check size={16} />
-            {article.is_read ? "Mark Unread" : "Mark Read"}
-          </button>
-
-          <button
-            onClick={handleDelete}
-            className="btn-delete"
-            title="Delete article"
-          >
-            <Trash2 size={16} />
-            Delete
-          </button>
-        </div>
       </div>
-
-      {showDeleteDialog && (
-        <ConfirmDialog
-          isOpen={showDeleteDialog}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-          title="Delete Article"
-          message={`Are you sure you want to delete "${
-            article.title || "this article"
-          }"?`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          type="danger"
-        />
-      )}
-    </div>
+    </>
   );
 };
 

@@ -4,12 +4,16 @@
  */
 import axios from 'axios';
 
+// Import.meta.env is Vite-specific environment variable access
+// VITE_API_URL is the base URL for the API
+
+
 // API configuration
 const isDevelopment = import.meta.env.DEV;
 // For development, use Vite proxy to Flask backend at /api
 // For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
 const apiBaseURL = isDevelopment
-  ? '/api'
+  ? 'http://localhost:3000/api'
   : 'https://readit-backend-r69u.onrender.com';
 
 // Create axios instance
