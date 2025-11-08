@@ -1,6 +1,6 @@
 # Read It Later
 
-A full-stack web application to save and organize articles for later reading, built with Flask backend, React frontend, and a Chrome extension.
+A full-stack web application to save and organize articles for later reading, built with a MERN backend (MongoDB, Express, React, Node.js) and a Chrome extension.
 
 ## Features
 
@@ -15,12 +15,12 @@ A full-stack web application to save and organize articles for later reading, bu
 
 ```
 read-it-later/
-├── backend/                 # Flask API server
-│   ├── app.py              # Main Flask application
+├── backend/                 # Express + MongoDB API server
+│   ├── server.js           # Main Express application
 │   ├── routes/             # API routes
-│   ├── models/             # Data models
+│   ├── models/             # Mongoose data models
 │   ├── services/           # Business logic
-│   └── requirements.txt    # Python dependencies
+│   └── package.json        # Node.js dependencies
 ├── frontend/               # React web application
 │   ├── src/
 │   │   ├── components/     # React components
@@ -37,11 +37,11 @@ read-it-later/
 
 ### Prerequisites
 
-- Python 3.8+
-- Node.js 16+
+- Node.js 18+
+- MongoDB Atlas account (or local MongoDB)
 - Chrome browser (for extension)
 
-### Backend Setup
+### Backend Setup (Express + MongoDB)
 
 1. Navigate to the backend directory:
 
@@ -49,38 +49,29 @@ read-it-later/
    cd backend
    ```
 
-2. Create and activate a virtual environment:
+2. Install dependencies:
 
    ```bash
-   python -m venv venv
-
-   # On Windows
-   venv\Scripts\activate
-
-   # On macOS/Linux
-   source venv/bin/activate
+   npm install
    ```
 
-3. Install dependencies:
+3. Set up your `.env` file:
 
-   ```bash
-   pip install -r requirements.txt
+   ```env
+   MONGODB_URI=your-mongodb-uri
+   PORT=5000
+   CLIENT_URL=http://localhost:3000
    ```
 
-4. Initialize the database:
+4. Start the backend server:
 
    ```bash
-   python database.py
-   ```
-
-5. Start the Flask server:
-   ```bash
-   python app.py
+   npm run dev
    ```
 
 The backend will be available at `http://localhost:5000`
 
-### Frontend Setup
+### Frontend Setup (React)
 
 1. Navigate to the frontend directory:
 
@@ -95,6 +86,7 @@ The backend will be available at `http://localhost:5000`
    ```
 
 3. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -107,6 +99,7 @@ The frontend will be available at `http://localhost:3000`
 2. Enable "Developer mode" in the top right
 3. Click "Load unpacked" and select the `extension` directory
 4. The extension will appear in your browser toolbar
+5. For production, update the API and frontend URLs in `background.js` and `popup.js` to your deployed backend and frontend URLs.
 
 ## API Endpoints
 
@@ -119,11 +112,12 @@ The frontend will be available at `http://localhost:3000`
 
 ### Backend
 
-- **Flask**: Python web framework
-- **SQLite**: Database for storing articles
-- **Flask-CORS**: Cross-origin resource sharing
-- **BeautifulSoup4**: Web scraping for metadata extraction
-- **Requests**: HTTP library for fetching web pages
+- **Express.js**: Node.js web framework
+- **MongoDB (Atlas)**: Cloud database for storing articles
+- **Mongoose**: MongoDB ODM for schema and queries
+- **CORS**: Cross-origin resource sharing
+- **Cheerio**: Web scraping for metadata extraction
+- **Axios**: HTTP library for fetching web pages
 
 ### Frontend
 
@@ -146,11 +140,17 @@ The frontend will be available at `http://localhost:3000`
 2. Start the frontend development server (port 3000)
 3. Load the Chrome extension in developer mode
 
-The Vite development server is configured with a proxy to forward API requests to the backend.
+The Vite development server is configured with a proxy to forward `/api` requests to the backend.
 
 ### Building for Production
 
-Frontend:
+#### Backend
+
+Deploy the backend to Render, Railway, or Heroku. Set your environment variables (`MONGODB_URI`, `PORT`, `CLIENT_URL`).
+
+#### Frontend
+
+Deploy the frontend to Netlify or Vercel. Set `VITE_API_URL` in your environment to your backend API URL.
 
 ```bash
 cd frontend
@@ -158,6 +158,10 @@ npm run build
 ```
 
 The built files will be in the `frontend/dist` directory.
+
+#### Extension
+
+Update API and frontend URLs in `background.js` and `popup.js` to your live deployment URLs. Zip the `extension/` folder and upload to the Chrome Web Store.
 
 ## Contributing
 

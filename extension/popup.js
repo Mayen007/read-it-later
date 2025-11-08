@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (viewSavedLink) {
     viewSavedLink.addEventListener('click', function (e) {
       e.preventDefault();
-      // Open your React frontend (adjust URL as needed)
-      chrome.tabs.create({ url: 'http://localhost:3000' });
+      // Open your live React frontend (adjust URL as needed)
+      chrome.tabs.create({ url: 'https://readitt.netlify.app/' });
       window.close(); // Close the popup
     });
   }
