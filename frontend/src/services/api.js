@@ -13,8 +13,8 @@ const isDevelopment = import.meta.env.DEV;
 // For development, use Vite proxy to Flask backend at /api
 // For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
 const apiBaseURL = isDevelopment
-  ? 'http://localhost:3000/api'
-  : 'https://readit-backend-r69u.onrender.com';
+  ? 'http://localhost:5000/api'
+  : 'https://readit-backend-r69u.onrender.com/api';
 
 // Create axios instance
 const api = axios.create({
@@ -66,7 +66,6 @@ export const articlesAPI = {
 
     const queryString = params.toString();
     const url = `/articles${queryString ? `?${queryString}` : ''}`;
-
     return api.get(url);
   },
 
