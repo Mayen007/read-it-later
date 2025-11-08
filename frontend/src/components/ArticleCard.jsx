@@ -101,7 +101,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   return (
     <>
-      <div className={`article-card ${article.is_read ? "read" : "unread"}`}>
+      <div className={`card article-card ${article.is_read ? "read" : "unread"}`}>
         <div className="article-thumbnail">
           <img
             src={article.thumbnail_url || "/logo.png"}
@@ -147,11 +147,11 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             )}
           </div>
 
-          <div className="article-actions">
+          <div className="flex justify-between items-center">
             <button
               onClick={handleToggleRead}
               disabled={isLoading}
-              className={`btn-toggle-read ${
+              className={`btn btn-toggle-read ${
                 article.is_read ? "read" : "unread"
               }`}
               title={article.is_read ? "Mark as unread" : "Mark as read"}
@@ -162,7 +162,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
             <button
               onClick={handleDelete}
-              className="btn-delete"
+              className="btn btn-delete"
               title="Delete article"
             >
               <Trash2 size={16} />

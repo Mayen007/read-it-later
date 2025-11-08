@@ -407,12 +407,6 @@ body {
   flex-shrink: 0;
 }
 
-.article-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: auto;
-}
-
 .btn-toggle-read,
 .btn-delete {
   display: flex;
@@ -492,10 +486,6 @@ body {
 
   .filter-buttons {
     justify-content: center;
-  }
-
-  .article-actions {
-    flex-direction: column;
   }
 
   .error-banner {
