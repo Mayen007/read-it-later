@@ -54,8 +54,22 @@ function App() {
   };
 
   const handleDeleteArticle = async (id) => {
-    await articlesAPI.delete(id);
-    setArticles((prev) => prev.filter((article) => article._id !== id));
+    try {
+      await articlesAPI.delete(id);
+    } catch (err) {
+      // If the article was already deleted on the server, treat as success and remove locally.
+      if (err?.response?.status === 404) {
+        console.warn(
+          `Article ${id} was not found on server; removing locally.`
+        );
+      } else {
+        // Re-throw other errors so callers can show feedback
+        throw err;
+      }
+    } finally {
+      // Always remove the article locally to keep UI in sync and avoid repeated delete calls
+      setArticles((prev) => prev.filter((article) => article._id !== id));
+    }
   };
 
   return (

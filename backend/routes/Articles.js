@@ -29,8 +29,10 @@ router.get('/', async (req, res) => {
       query.title = { $regex: search, $options: 'i' };
     }
     const articles = await Article.find(query).sort({ created_at: -1 });
+    console.log("Articles retrieved from DB:", articles.map(a => a._id)); // Log only IDs for brevity
     res.json(articles);
   } catch (error) {
+    console.error("Error fetching articles:", error);
     res.status(500).json({ error: 'Failed to fetch articles' });
   }
 });
@@ -73,10 +75,12 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/articles/:id - Delete article
 router.delete('/:id', async (req, res) => {
   try {
+    console.log("Attempting to delete article with ID:", req.params.id);
     const article = await Article.findByIdAndDelete(req.params.id);
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json({ message: 'Article deleted' });
   } catch (error) {
+    console.error("Error deleting article:", error);
     res.status(500).json({ error: 'Failed to delete article' });
   }
 });

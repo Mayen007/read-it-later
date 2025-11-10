@@ -45,10 +45,13 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   const handleConfirmDelete = async () => {
     setShowDeleteDialog(false);
+    setIsLoading(true);
     try {
       await onDelete(article._id);
     } catch (error) {
       console.error("Error deleting article:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,7 +104,9 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   return (
     <>
-      <div className={`card article-card ${article.is_read ? "read" : "unread"}`}>
+      <div
+        className={`card article-card ${article.is_read ? "read" : "unread"}`}
+      >
         <div className="article-thumbnail">
           <img
             src={article.thumbnail_url || "/logo.png"}
@@ -163,6 +168,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             <button
               onClick={handleDelete}
               className="btn btn-delete"
+              disabled={isLoading}
               title="Delete article"
             >
               <Trash2 size={16} />
