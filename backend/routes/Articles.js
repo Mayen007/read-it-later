@@ -46,12 +46,39 @@ router.post('/', async (req, res) => {
     const existing = await Article.findOne({ url });
     if (existing) return res.status(409).json({ error: 'Article already exists' });
 
-    const metadata = await extractMetadata(url);
-    const article = new Article({ url, ...metadata, tags });
+    // 1. Create a placeholder article with 'pending' status
+    const article = new Article({ url, tags, status: 'pending', title: 'Processing...', excerpt: 'Metadata extraction in progress.' });
     await article.save();
-    res.status(201).json(article);
+
+    // 2. Send immediate response to client
+    res.status(202).json({ message: 'Article processing started', article }); // 202 Accepted
+
+    // 3. Initiate heavy processing in the background (non-blocking)
+    //    We don't 'await' this call, allowing the response to be sent first.
+    //    The .then() and .catch() will run later in the event loop.
+    extractMetadata(url)
+      .then(async (metadata) => {
+        // 4. Update the article with extracted metadata and 'completed' status
+        await Article.findByIdAndUpdate(article._id, {
+          ...metadata,
+          status: 'completed',
+          updated_at: new Date()
+        }, { new: true });
+        console.log(`Metadata extracted and updated for article: ${article._id}`);
+      })
+      .catch(async (error) => {
+        // 4. Update status to 'failed' if extraction fails
+        console.error(`Error during background metadata extraction for ${url}:`, error);
+        await Article.findByIdAndUpdate(article._id, {
+          status: 'failed',
+          error_message: error.message,
+          updated_at: new Date()
+        }, { new: true });
+      });
+
   } catch (error) {
-    res.status(500).json({ error: 'Failed to save article' });
+    console.error("Error saving initial article:", error);
+    res.status(500).json({ error: 'Failed to save article initially' });
   }
 });
 

@@ -9,6 +9,8 @@ const articleSchema = new mongoose.Schema({
   thumbnail_url: { type: String, default: '/logo.png' },
   tags: { type: [String], default: [] },
   is_read: { type: Boolean, default: false },
+  status: { type: String, default: 'pending', enum: ['pending', 'completed', 'failed'] }, // New field
+  error_message: { type: String, default: '' }, // New field
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
