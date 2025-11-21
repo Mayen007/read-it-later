@@ -9,11 +9,17 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [pollingIntervals, setPollingIntervals] = useState({}); // To store interval IDs for polling
 
   // Load articles on component mount
   useEffect(() => {
     loadArticles();
-  }, []);
+
+    // Cleanup polling intervals on unmount
+    return () => {
+      Object.values(pollingIntervals).forEach(clearInterval);
+    };
+  }, [pollingIntervals]);
 
   const loadArticles = async () => {
     try {
@@ -38,10 +44,56 @@ function App() {
     }
   };
 
+  const handleUpdateArticle = (updatedArticle) => {
+    setArticles((prev) =>
+      prev.map((article) =>
+        article._id === updatedArticle._id ? updatedArticle : article
+      )
+    );
+  };
+
+  const startPolling = (articleId) => {
+    // Clear existing interval if any for this article
+    if (pollingIntervals[articleId]) {
+      clearInterval(pollingIntervals[articleId]);
+    }
+
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await articlesAPI.get(articleId); // Assuming you add a get by ID to your API
+        const fetchedArticle = response.data;
+
+        if (
+          fetchedArticle.status === "completed" ||
+          fetchedArticle.status === "failed"
+        ) {
+          handleUpdateArticle(fetchedArticle);
+          clearInterval(intervalId); // Stop polling once completed or failed
+          setPollingIntervals((prev) => {
+            const newIntervals = { ...prev };
+            delete newIntervals[articleId];
+            return newIntervals;
+          });
+        }
+      } catch (error) {
+        console.error(`Error polling for article ${articleId}:`, error);
+        // Consider stopping polling after a few errors or specific error types
+      }
+    }, 5000); // Poll every 5 seconds
+
+    setPollingIntervals((prev) => ({
+      ...prev,
+      [articleId]: intervalId,
+    }));
+  };
+
   const handleAddArticle = async (url) => {
     const response = await articlesAPI.add(url);
-    const newArticle = response.data;
+    const newArticle = response.data.article; // Extract the article from the 'article' property
     setArticles((prev) => [newArticle, ...prev]);
+
+    // Start polling for this specific article's status
+    startPolling(newArticle._id);
   };
 
   const handleToggleRead = async (id, isRead) => {

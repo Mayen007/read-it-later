@@ -28,6 +28,7 @@ const AddArticleForm = ({ onAddArticle }) => {
     try {
       await onAddArticle(url.trim());
       setUrl("");
+      // No longer setting isLoading to false immediately, as background processing continues
     } catch (error) {
       console.error("Error adding article:", error);
       if (error.response?.data?.error) {
@@ -35,9 +36,9 @@ const AddArticleForm = ({ onAddArticle }) => {
       } else {
         setError("Failed to add article. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

@@ -105,57 +105,95 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   return (
     <>
       <div
-        className={`card article-card ${article.is_read ? "read" : "unread"}`}
+        className={`card article-card ${article.is_read ? "read" : "unread"} ${
+          article.status === "pending" ? "pending" : ""
+        } ${article.status === "failed" ? "failed" : ""}`}
       >
         <div className="article-thumbnail">
-          <img
-            src={article.thumbnail_url || "/logo.png"}
-            alt={article.title}
-            onError={(e) => {
-              if (e.target.src !== "/logo.png") {
-                e.target.src = "/logo.png";
-              }
-            }}
-          />
+          {article.status === "pending" ? (
+            <div className="thumbnail-placeholder pending">
+              <Clock size={48} className="icon-pulse" />
+            </div>
+          ) : article.status === "failed" ? (
+            <div className="thumbnail-placeholder failed">
+              <Trash2 size={48} />
+            </div>
+          ) : (
+            <img
+              src={article.thumbnail_url || "/logo.png"}
+              alt={article.title}
+              onError={(e) => {
+                if (e.target.src !== "/logo.png") {
+                  e.target.src = "/logo.png";
+                }
+              }}
+            />
+          )}
         </div>
 
         <div className="article-content">
-          <h3 className="article-title">
-            <a href={article.url} target="_blank" rel="noopener noreferrer">
-              {article.title || "Untitled Article"}
-              <ExternalLink size={14} />
-            </a>
-          </h3>
+          {article.status === "pending" ? (
+            <h3 className="article-title">Processing Article...</h3>
+          ) : article.status === "failed" ? (
+            <h3 className="article-title error-title">
+              Failed to Load Article
+            </h3>
+          ) : (
+            <h3 className="article-title">
+              <a href={article.url} target="_blank" rel="noopener noreferrer">
+                {article.title || "Untitled Article"}
+                <ExternalLink size={14} />
+              </a>
+            </h3>
+          )}
 
-          {article.excerpt && (
-            <p className="article-excerpt">{article.excerpt}</p>
+          {article.status === "pending" ? (
+            <p className="article-excerpt">Metadata extraction in progress.</p>
+          ) : article.status === "failed" ? (
+            <p className="article-excerpt error-message">
+              Error: {article.error_message || "Unknown error"}
+            </p>
+          ) : (
+            article.excerpt && (
+              <p className="article-excerpt">{article.excerpt}</p>
+            )
           )}
 
           <div className="article-meta">
-            {article.author && (
-              <span className="meta-item">
-                <User size={12} />
-                {article.author}
-              </span>
-            )}
-            {article.published_date && (
-              <span className="meta-item">
-                <Calendar size={12} />
-                {formatDate(article.published_date)}
-              </span>
-            )}
-            {article.saved_date && (
-              <span className="meta-item">
-                <Clock size={12} />
-                Saved {formatDate(article.saved_date)}
-              </span>
-            )}
+            {article.author &&
+              article.status !== "pending" &&
+              article.status !== "failed" && (
+                <span className="meta-item">
+                  <User size={12} />
+                  {article.author}
+                </span>
+              )}
+            {article.published_date &&
+              article.status !== "pending" &&
+              article.status !== "failed" && (
+                <span className="meta-item">
+                  <Calendar size={12} />
+                  {formatDate(article.published_date)}
+                </span>
+              )}
+            {article.saved_date &&
+              article.status !== "pending" &&
+              article.status !== "failed" && (
+                <span className="meta-item">
+                  <Clock size={12} />
+                  Saved {formatDate(article.saved_date)}
+                </span>
+              )}
           </div>
 
           <div className="flex justify-between items-center">
             <button
               onClick={handleToggleRead}
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                article.status === "pending" ||
+                article.status === "failed"
+              }
               className={`btn btn-toggle-read ${
                 article.is_read ? "read" : "unread"
               }`}
@@ -168,7 +206,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             <button
               onClick={handleDelete}
               className="btn btn-delete"
-              disabled={isLoading}
+              disabled={isLoading || article.status === "pending"}
               title="Delete article"
             >
               <Trash2 size={16} />

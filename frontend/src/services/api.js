@@ -70,6 +70,15 @@ export const articlesAPI = {
   },
 
   /**
+   * Get a single article by ID
+   * @param {string} id - The ID of the article to retrieve
+   * @returns {Promise<Object>} The article object
+   */
+  get: (id) => {
+    return api.get(`/articles/${id}`);
+  },
+
+  /**
    * Add a new article by URL
    * @param {string} url - Article URL to save
    * @param {Array} tags - Optional tags
