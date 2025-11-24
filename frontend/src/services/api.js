@@ -10,11 +10,12 @@ import axios from 'axios';
 
 // API configuration
 const isDevelopment = import.meta.env.DEV;
-// For development, use Vite proxy to Flask backend at /api
-// For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
-const apiBaseURL = isDevelopment
-  ? 'http://localhost:5000/api'
-  : 'https://readit-backend-r69u.onrender.com/api';
+// Allow overriding the backend URL at build/run time with VITE_API_URL.
+// If not provided, use localhost:3001 in dev or the default deployed URL in production.
+const envApiUrl = import.meta.env.VITE_API_URL;
+const apiBaseURL = envApiUrl || (isDevelopment
+  ? 'http://localhost:3001/api'
+  : 'https://readit-backend-r69u.onrender.com/api');
 
 // Create axios instance
 const api = axios.create({
