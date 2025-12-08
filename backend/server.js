@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const articlesRoutes = require('./routes/Articles');
+const categoriesRoutes = require('./routes/Categories');
 const connectDb = require('./config/db');
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/articles', articlesRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

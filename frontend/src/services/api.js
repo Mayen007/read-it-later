@@ -10,11 +10,8 @@ import axios from 'axios';
 
 // API configuration
 const isDevelopment = import.meta.env.DEV;
-// For development, use Vite proxy to Flask backend at /api
-// For production, set your deployed Flask server URL (e.g., https://your-flask-app.com/api)
-const apiBaseURL = isDevelopment
-  ? 'http://localhost:5000/api'
-  : 'https://readit-backend-r69u.onrender.com/api';
+// Default API base: use VITE_API_URL if provided, otherwise default to local backend.
+const apiBaseURL = import.meta.env.VITE_API_URL || (isDevelopment ? 'http://localhost:5000/api' : 'https://readit-backend-r69u.onrender.com/api');
 
 // Create axios instance
 const api = axios.create({
@@ -28,7 +25,9 @@ const api = axios.create({
 // Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    if (import.meta.env.DEV) {
+      console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -38,7 +37,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
+    if (import.meta.env.DEV) {
+      console.error('API Error:', error.response?.data || error.message);
+    }
     return Promise.reject(error);
   }
 );
@@ -89,6 +90,13 @@ export const articlesAPI = {
   },
 
   /**
+   * Add article with optional categories (array of names or ids)
+   */
+  addWithCategories: (url, categories = [], tags = []) => {
+    return api.post('/articles', { url, categories, tags });
+  },
+
+  /**
    * Mark article as read/unread
    * @param {number} id - Article ID
    * @param {boolean} isRead - Read status
@@ -117,6 +125,15 @@ export const articlesAPI = {
   updateTags: (id, tags) => {
     return api.put(`/articles/${id}`, { tags });
   },
+
+  // Categories API
+  getCategories: () => api.get('/categories'),
+  createCategory: (name, color = '') => api.post('/categories', { name, color }),
+  updateCategory: (id, data) => api.put(`/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/categories/${id}`),
+
+  // Bulk assign categories to multiple articles
+  bulkAssignCategories: (assignments) => api.put('/articles/bulk-categories', { assignments }),
 
   /**
    * Delete an article

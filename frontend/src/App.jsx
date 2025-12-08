@@ -3,7 +3,6 @@ import { BookOpen } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
 import { articlesAPI } from "./services/api";
-import "./App.css";
 
 function App() {
   const [articles, setArticles] = useState([]);
@@ -28,7 +27,9 @@ function App() {
       const response = await articlesAPI.getAll();
       setArticles(response.data);
     } catch (error) {
-      console.error("Error loading articles:", error);
+      if (import.meta.env.DEV) {
+        console.error("Error loading articles:", error);
+      }
       const isDev = import.meta.env.DEV;
       if (isDev) {
         setError(
@@ -76,7 +77,9 @@ function App() {
           });
         }
       } catch (error) {
-        console.error(`Error polling for article ${articleId}:`, error);
+        if (import.meta.env.DEV) {
+          console.error(`Error polling for article ${articleId}:`, error);
+        }
         // Consider stopping polling after a few errors or specific error types
       }
     }, 5000); // Poll every 5 seconds
@@ -87,8 +90,8 @@ function App() {
     }));
   };
 
-  const handleAddArticle = async (url) => {
-    const response = await articlesAPI.add(url);
+  const handleAddArticle = async (url, categories = []) => {
+    const response = await articlesAPI.addWithCategories(url, categories);
     const newArticle = response.data.article; // Extract the article from the 'article' property
     setArticles((prev) => [newArticle, ...prev]);
 
@@ -111,9 +114,11 @@ function App() {
     } catch (err) {
       // If the article was already deleted on the server, treat as success and remove locally.
       if (err?.response?.status === 404) {
-        console.warn(
-          `Article ${id} was not found on server; removing locally.`
-        );
+        if (import.meta.env.DEV) {
+          console.warn(
+            `Article ${id} was not found on server; removing locally.`
+          );
+        }
       } else {
         // Re-throw other errors so callers can show feedback
         throw err;
@@ -125,22 +130,29 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>
-          <BookOpen size={32} />
+    <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
+      <header className="text-center mb-8 sm:mb-12">
+        <h1 className="flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500 mb-2">
+          <BookOpen size={32} className="sm:w-10 sm:h-10" />
           Read It Later
         </h1>
-        <p>Save and organize articles to read later</p>
+        <p className="text-gray-600 text-base sm:text-lg">
+          Save and organize articles to read later
+        </p>
       </header>
 
-      <main className="app-main">
+      <main className="flex flex-col gap-6 sm:gap-8">
         <AddArticleForm onAddArticle={handleAddArticle} />
 
         {error && (
-          <div className="error-banner">
-            <p>{error}</p>
-            <button onClick={loadArticles}>Retry</button>
+          <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <p className="text-sm sm:text-base">{error}</p>
+            <button
+              onClick={loadArticles}
+              className="px-4 py-2 bg-red-500 text-white rounded text-sm cursor-pointer hover:bg-red-600 transition-colors whitespace-nowrap shrink-0"
+            >
+              Retry
+            </button>
           </div>
         )}
 
