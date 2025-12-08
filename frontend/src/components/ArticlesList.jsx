@@ -61,61 +61,62 @@ const ArticlesList = ({
 
   if (isLoading) {
     return (
-      <>
-        <div className="articles-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading articles...</p>
-        </div>
-      </>
+      <div className="text-center py-12 text-gray-600">
+        <div className="w-10 h-10 border-3 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+        <p>Loading articles...</p>
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="articles-list">
-        <ArticleFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          filter={filter}
-          onFilterChange={setFilter}
-          totalCount={counts.total}
-          readCount={counts.read}
-          unreadCount={counts.unread}
-        />
+    <div className="flex flex-col gap-6">
+      <ArticleFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filter={filter}
+        onFilterChange={setFilter}
+        totalCount={counts.total}
+        readCount={counts.read}
+        unreadCount={counts.unread}
+      />
 
-        {filteredArticles.length === 0 ? (
-          <div className="empty-state flex justify-center items-center flex-col">
-            <BookOpen size={48} className="flex justify-center items-center"/>
-            {articles.length === 0 ? (
-              <>
-                <h3>No articles saved yet</h3>
-                <p>Start by adding your first article using the form above!</p>
-              </>
-            ) : (
-              <>
-                <h3>No articles match your search</h3>
-                <p>Try adjusting your search terms or filters.</p>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="articles-grid">
-            {filteredArticles.map((article) => (
-              <div
-                key={article._id}
-                ref={(el) => (articleRefs.current[article._id] = el)}
-              >
-                <ArticleCard
-                  article={article}
-                  onToggleRead={onToggleRead}
-                  onDelete={onDeleteArticle}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+      {filteredArticles.length === 0 ? (
+        <div className="text-center py-12 text-gray-600">
+          <BookOpen size={48} className="text-gray-400 mx-auto mb-4" />
+          {articles.length === 0 ? (
+            <>
+              <h3 className="text-xl mb-2 text-gray-900">
+                No articles saved yet
+              </h3>
+              <p>Start by adding your first article using the form above!</p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-xl mb-2 text-gray-900">
+                No articles match your search
+              </h3>
+              <p>Try adjusting your search terms or filters.</p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {filteredArticles.map((article) => (
+            <div
+              key={article._id}
+              ref={(el) => (articleRefs.current[article._id] = el)}
+              className="h-full"
+            >
+              <ArticleCard
+                article={article}
+                onToggleRead={onToggleRead}
+                onDelete={onDeleteArticle}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
