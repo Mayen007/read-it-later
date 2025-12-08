@@ -18,10 +18,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'date-vendor': ['date-fns'],
+          'ui-vendor': ['lucide-react', 'react-select'],
+        },
       },
     },
   },
