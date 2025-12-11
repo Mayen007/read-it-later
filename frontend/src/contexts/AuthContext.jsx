@@ -8,18 +8,33 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load tokens from localStorage on mount
+  // Load tokens from localStorage on mount and validate
   useEffect(() => {
-    const storedAccessToken = localStorage.getItem("accessToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
-    const storedUser = localStorage.getItem("user");
+    const validateAndLoadTokens = async () => {
+      const storedAccessToken = localStorage.getItem("accessToken");
+      const storedRefreshToken = localStorage.getItem("refreshToken");
+      const storedUser = localStorage.getItem("user");
 
-    if (storedAccessToken && storedRefreshToken && storedUser) {
-      setAccessToken(storedAccessToken);
-      setRefreshToken(storedRefreshToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+      if (storedAccessToken && storedRefreshToken && storedUser) {
+        try {
+          // Try to validate token by making a simple API call
+          await api.get("/articles");
+          // If successful, tokens are valid
+          setAccessToken(storedAccessToken);
+          setRefreshToken(storedRefreshToken);
+          setUser(JSON.parse(storedUser));
+        } catch {
+          // If validation fails, clear invalid tokens
+          console.log("Invalid tokens detected, clearing...");
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
+        }
+      }
+      setLoading(false);
+    };
+
+    validateAndLoadTokens();
   }, []);
 
   const login = async (email, password) => {

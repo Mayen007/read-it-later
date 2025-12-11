@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BookOpen, LogOut } from "lucide-react";
+import { BookOpen, LogOut, User } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
 import Login from "./components/Login";
@@ -168,9 +168,12 @@ function AppContent() {
             Read It Later
           </h1>
           <div className="flex-1 flex justify-end items-center gap-3">
-            <span className="text-sm text-gray-600 hidden sm:inline">
-              {user?.email}
-            </span>
+            <div
+              className="flex items-center gap-2 text-gray-600"
+              title={user?.email}
+            >
+              <User size={20} />
+            </div>
             <button
               onClick={logout}
               className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
