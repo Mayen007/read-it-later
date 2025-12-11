@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the Article schema
 const articleSchema = new mongoose.Schema({
-  url: { type: String, required: true, unique: true },
+  url: { type: String, required: true },
   title: { type: String, default: 'Untitled' },
   excerpt: { type: String, default: '' },
   author: { type: String, default: '' },
@@ -17,6 +17,9 @@ const articleSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
+
+// Compound unique index: same URL can exist for different users
+articleSchema.index({ url: 1, user_id: 1 }, { unique: true });
 
 // Create the Article model
 const Article = mongoose.model('Article', articleSchema);

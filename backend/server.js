@@ -12,6 +12,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for production deployment (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 connectDb();
 
 // Middleware
