@@ -4,12 +4,14 @@ A full-stack web application to save and organize articles for later reading, bu
 
 ## Features
 
+- 🔐 **User Authentication**: Secure JWT-based login and registration with multi-user support
 - 📝 **Save Articles**: Add articles by URL with automatic metadata extraction
 - 🔍 **Search & Filter**: Search through saved articles and filter by read/unread status
 - ✅ **Mark as Read**: Track your reading progress
 - 🗑️ **Delete Articles**: Remove articles you no longer need
-- 🌐 **Chrome Extension**: Save current page directly from your browser
+- 🌐 **Chrome Extension**: Save current page directly from your browser with authenticated requests
 - 📱 **Responsive Design**: Works on desktop and mobile devices
+- 🔄 **Token Refresh**: Automatic access token refresh for seamless user experience
 
 ## Project Structure
 
@@ -61,6 +63,14 @@ read-it-later/
    MONGODB_URI=your-mongodb-uri
    PORT=5000
    CLIENT_URL=http://localhost:3000
+   ACCESS_TOKEN_SECRET=your-secret-key-change-in-production
+   REFRESH_TOKEN_SECRET=your-refresh-secret-key-change-in-production
+   ```
+
+   **Security Note**: Generate strong random secrets for production using:
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
    ```
 
 4. Start the backend server:
@@ -99,23 +109,44 @@ The frontend will be available at `http://localhost:3000`
 2. Enable "Developer mode" in the top right
 3. Click "Load unpacked" and select the `extension` directory
 4. The extension will appear in your browser toolbar
-5. For production, update the API and frontend URLs in `background.js` and `popup.js` to your deployed backend and frontend URLs.
+5. Sign in with your credentials to start saving articles
+6. For production, update the `API_BASE_URL` in `background.js` and `popup.js` to your deployed backend URL.
+
+**Note**: The extension stores authentication tokens in `chrome.storage.local` and automatically refreshes expired tokens.
 
 ## API Endpoints
 
-- `GET /api/articles` - Get all articles
+### Authentication
+
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login and receive tokens
+- `POST /api/auth/refresh` - Refresh access token
+
+### Articles (Protected)
+
+- `GET /api/articles` - Get all articles for authenticated user
 - `POST /api/articles` - Add a new article
 - `PUT /api/articles/:id` - Update article (mark as read/unread)
 - `DELETE /api/articles/:id` - Delete article
+
+### Categories (Protected)
+
+- `GET /api/categories` - Get all categories for authenticated user
+- `POST /api/categories` - Create a new category
+- `PUT /api/categories/:id` - Update category
+- `DELETE /api/categories/:id` - Delete category
 
 ## Technologies Used
 
 ### Backend
 
 - **Express.js**: Node.js web framework
-- **MongoDB (Atlas)**: Cloud database for storing articles
+- **MongoDB (Atlas)**: Cloud database for storing articles and users
 - **Mongoose**: MongoDB ODM for schema and queries
-- **CORS**: Cross-origin resource sharing
+- **JWT (jsonwebtoken)**: Token-based authentication
+- **bcrypt**: Password hashing and security
+- **express-rate-limit**: Rate limiting for auth endpoints
+- **CORS**: Cross-origin resource sharing with whitelist
 - **Cheerio**: Web scraping for metadata extraction
 - **Axios**: HTTP library for fetching web pages
 

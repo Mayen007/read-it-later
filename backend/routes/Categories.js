@@ -1,12 +1,13 @@
 const express = require('express');
 const Category = require('../models/Category');
+const authenticateToken = require('../middleware/auth');
 
 const router = express.Router();
 
 // GET /api/categories - list categories
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const categories = await Category.find({}).sort({ name: 1 });
+    const categories = await Category.find({ user_id: req.user.id }).sort({ name: 1 });
     res.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -15,17 +16,17 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/categories - create category
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { name, color = '' } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    let category = new Category({ name, slug, color });
+    let category = new Category({ name, slug, color, user_id: req.user.id });
     try {
       category = await category.save();
     } catch (e) {
       // handle duplicate name race
-      category = await Category.findOne({ name });
+      category = await Category.findOne({ name, user_id: req.user.id });
     }
     res.status(201).json(category);
   } catch (error) {
@@ -35,7 +36,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/categories/:id - update category
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { name, color } = req.body;
     const update = {};
@@ -44,7 +45,11 @@ router.put('/:id', async (req, res) => {
       update.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     }
     if (color !== undefined) update.color = color;
-    const category = await Category.findByIdAndUpdate(req.params.id, update, { new: true });
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id, user_id: req.user.id },
+      update,
+      { new: true }
+    );
     if (!category) return res.status(404).json({ error: 'Category not found' });
     res.json(category);
   } catch (error) {
@@ -54,9 +59,9 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/categories/:id - delete category
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const category = await Category.findByIdAndDelete(req.params.id);
+    const category = await Category.findOneAndDelete({ _id: req.params.id, user_id: req.user.id });
     if (!category) return res.status(404).json({ error: 'Category not found' });
     res.json({ message: 'Category deleted' });
   } catch (error) {

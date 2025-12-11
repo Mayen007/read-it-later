@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
-import { BookOpen } from "lucide-react";
+import { BookOpen, LogOut, User } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
 
-function App() {
+function AppContent() {
+  const { isAuthenticated, loading: authLoading, logout, user } = useAuth();
+  const [showRegister, setShowRegister] = useState(false);
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,13 +18,15 @@ function App() {
 
   // Load articles on component mount
   useEffect(() => {
-    loadArticles();
+    if (isAuthenticated) {
+      loadArticles();
+    }
 
     // Cleanup polling intervals on unmount
     return () => {
       Object.values(pollingIntervals).forEach(clearInterval);
     };
-  }, [pollingIntervals]);
+  }, [pollingIntervals, isAuthenticated]);
 
   const loadArticles = async () => {
     try {
@@ -129,13 +137,53 @@ function App() {
     }
   };
 
+  // Show loading screen while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login/register screen if not authenticated
+  if (!isAuthenticated) {
+    return showRegister ? (
+      <Register onSwitchToLogin={() => setShowRegister(false)} />
+    ) : (
+      <Login onSwitchToRegister={() => setShowRegister(true)} />
+    );
+  }
+
   return (
     <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
       <header className="text-center mb-8 sm:mb-12">
-        <h1 className="flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500 mb-2">
-          <BookOpen size={32} className="sm:w-10 sm:h-10" />
-          Read It Later
-        </h1>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1"></div>
+          <h1 className="flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500">
+            <BookOpen size={32} className="sm:w-10 sm:h-10" />
+            Read It Later
+          </h1>
+          <div className="flex-1 flex justify-end items-center gap-3">
+            <div
+              className="flex items-center gap-2 text-gray-600"
+              title={user?.email}
+            >
+              <User size={20} />
+            </div>
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
+              title="Logout"
+            >
+              <LogOut size={18} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
+        </div>
         <p className="text-gray-600 text-base sm:text-lg">
           Save and organize articles to read later
         </p>
@@ -164,6 +212,14 @@ function App() {
         />
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
