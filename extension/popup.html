@@ -1,235 +1,364 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Read It Later</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
-<head>
-  <title>Read It Later</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary-color: #3b82f6;
-      --primary-hover: #2563eb;
-      --success-color: #10b981;
-      --danger-color: #ef4444;
-      --text-primary: #1f2937;
-      --text-secondary: #6b7280;
-      --bg-primary: #ffffff;
-      --bg-secondary: #f9fafb;
-      --border-color: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      width: 380px;
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
-
-    .container {
-      padding: 24px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-md);
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .header-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .header h2 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--primary-color);
-    }
-
-    .header p {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .icon {
-      font-size: 24px;
-    }
-
-    .save-section {
-      margin-bottom: 20px;
-    }
-
-    #saveBtn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background-color: var(--primary-color);
-      border: none;
-      color: white;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    #saveBtn:hover:not(:disabled) {
-      background-color: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    #saveBtn:active {
-      transform: translateY(0);
-    }
-
-    #saveBtn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #status {
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      font-weight: 500;
-      min-height: 20px;
-      transition: all 0.3s ease;
-      text-align: center;
-    }
-
-    .status-success {
-      background-color: rgb(240 253 244);
-      border: 1px solid rgb(187 247 208);
-      color: var(--success-color);
-    }
-
-    .status-error {
-      background-color: rgb(254 242 242);
-      border: 1px solid rgb(252 165 165);
-      color: var(--danger-color);
-    }
-
-    .status-loading {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      color: var(--text-secondary);
-    }
-
-    .footer {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .footer a:hover {
-      color: var(--primary-hover);
-      text-decoration: underline;
-    }
-
-    /* Loading animation */
-    .loading-dots::after {
-      content: '';
-      animation: dots 1.5s steps(5, end) infinite;
-    }
-
-    @keyframes dots {
-
-      0%,
-      20% {
-        content: '.';
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      40% {
-        content: '..';
+      :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f9fafb;
+        --border-color: #e5e7eb;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --radius-md: 8px;
+        --radius-lg: 12px;
       }
 
-      60% {
-        content: '...';
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        width: 380px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        line-height: 1.6;
       }
 
-      80%,
-      100% {
-        content: '';
+      .container {
+        padding: 24px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
       }
-    }
 
-    /* Book icon styling */
-    .book-icon {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-  </style>
-</head>
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+      }
 
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="header-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-book-open-icon lucide-book-open">
-          <path d="M12 7v14" />
-          <path
-            d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
-        </svg>
-        <h2>Read It Later</h2>
+      .header-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .header h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .header p {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .icon {
+        font-size: 24px;
+      }
+
+      .save-section {
+        margin-bottom: 20px;
+      }
+
+      #saveBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background-color: var(--primary-color);
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        font-family: inherit;
+      }
+
+      #saveBtn:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      #saveBtn:active {
+        transform: translateY(0);
+      }
+
+      #saveBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      #status {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 500;
+        min-height: 20px;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .status-success {
+        background-color: rgb(240 253 244);
+        border: 1px solid rgb(187 247 208);
+        color: var(--success-color);
+      }
+
+      .status-error {
+        background-color: rgb(254 242 242);
+        border: 1px solid rgb(252 165 165);
+        color: var(--danger-color);
+      }
+
+      .status-loading {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+      }
+
+      .footer {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+
+      .footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+
+      .footer a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      /* Loading animation */
+      .loading-dots::after {
+        content: "";
+        animation: dots 1.5s steps(5, end) infinite;
+      }
+
+      @keyframes dots {
+        0%,
+        20% {
+          content: ".";
+        }
+
+        40% {
+          content: "..";
+        }
+
+        60% {
+          content: "...";
+        }
+
+        80%,
+        100% {
+          content: "";
+        }
+      }
+
+      /* Book icon styling */
+      .book-icon {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+      }
+
+      /* Auth form styling */
+      .auth-section {
+        display: none;
+      }
+
+      .auth-section.active {
+        display: block;
+      }
+
+      .save-section.hidden {
+        display: none;
+      }
+
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.2s;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .auth-btn {
+        background-color: var(--primary-color);
+        border: none;
+        color: white;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        font-family: inherit;
+        margin-top: 8px;
+      }
+
+      .auth-btn:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+      }
+
+      .auth-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .auth-toggle {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .auth-toggle a {
+        color: var(--primary-color);
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .auth-toggle a:hover {
+        text-decoration: underline;
+      }
+
+      .error-message {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header-title">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-book-open-icon lucide-book-open"
+          >
+            <path d="M12 7v14" />
+            <path
+              d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+            />
+          </svg>
+          <h2>Read It Later</h2>
+        </div>
+        <p id="headerSubtext">Save and organize articles to read later</p>
       </div>
-      <p>Save and organize articles to read later</p>
+
+      <!-- Auth Section (shown when not logged in) -->
+      <div class="auth-section" id="authSection">
+        <form class="auth-form" id="authForm">
+          <input
+            type="email"
+            id="emailInput"
+            class="form-input"
+            placeholder="Email address"
+            required
+          />
+          <input
+            type="password"
+            id="passwordInput"
+            class="form-input"
+            placeholder="Password"
+            required
+          />
+          <button type="submit" class="auth-btn" id="authBtn">Sign In</button>
+          <div class="auth-toggle">
+            <span id="authToggleText">Don't have an account?</span>
+            <a href="#" id="authToggleLink">Register</a>
+          </div>
+          <div id="authError" class="error-message" style="display: none"></div>
+        </form>
+      </div>
+
+      <!-- Save Section (shown when logged in) -->
+      <div class="save-section" id="saveSection">
+        <button id="saveBtn">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+          Save Current Page
+        </button>
+      </div>
+
+      <div id="status"></div>
+
+      <div class="footer">
+        <a href="#" id="viewSaved">View Saved Articles</a>
+      </div>
     </div>
 
-    <div class="save-section">
-      <button id="saveBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14" />
-          <path d="M5 12h14" />
-        </svg>
-        Save Current Page
-      </button>
-    </div>
-
-    <div id="status"></div>
-
-    <div class="footer">
-      <a href="#" id="viewSaved">View Saved Articles</a>
-    </div>
-  </div>
-
-  <script src="popup.js"></script>
-</body>
-
+    <script src="popup.js"></script>
+  </body>
 </html>
