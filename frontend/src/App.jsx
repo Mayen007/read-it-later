@@ -186,7 +186,7 @@ function AppContent() {
             </div>
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm text-gray-600 hover:text-red-600 transition-colors rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm text-gray-600 hover:text-red-600 cursor-pointer transition-colors rounded-lg hover:bg-gray-50"
               title="Logout"
             >
               <LogOut size={18} className="shrink-0" />
