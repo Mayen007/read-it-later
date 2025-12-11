@@ -3,6 +3,7 @@ const Article = require('../models/Article');
 const Category = require('../models/Category');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const authenticateToken = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -23,10 +24,10 @@ const extractMetadata = async (url) => {
 
 // GET /api/articles - List all articles
 // Supports optional query params: search, category (category id)
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { search, category } = req.query;
-    let query = {};
+    let query = { user_id: req.user.id }; // Filter by authenticated user
     if (search) query.title = { $regex: search, $options: 'i' };
     if (category) query.categories = category; // filter by category id
 
@@ -41,7 +42,7 @@ router.get('/', async (req, res) => {
 });
 
 // Helper: resolve category identifiers or names to ObjectId array
-const resolveCategories = async (categoriesInput = []) => {
+const resolveCategories = async (categoriesInput = [], userId) => {
   if (!Array.isArray(categoriesInput)) return [];
   const resolved = [];
   for (const c of categoriesInput) {
@@ -54,15 +55,15 @@ const resolveCategories = async (categoriesInput = []) => {
     // Otherwise assume it's a category name; find or create
     const name = String(c).trim();
     if (!name) continue;
-    let cat = await Category.findOne({ name });
+    let cat = await Category.findOne({ name, user_id: userId });
     if (!cat) {
       const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      cat = new Category({ name, slug });
+      cat = new Category({ name, slug, user_id: userId });
       try {
         await cat.save();
       } catch (e) {
         // ignore duplicate key race and refetch
-        cat = await Category.findOne({ name });
+        cat = await Category.findOne({ name, user_id: userId });
       }
     }
     if (cat) resolved.push(cat._id);
@@ -72,19 +73,27 @@ const resolveCategories = async (categoriesInput = []) => {
 
 // POST /api/articles - Add new article
 // Accepts optional `tags` (string[]) and `categories` (array of category ids)
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { url, tags = [], categories = [] } = req.body;
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
-    const existing = await Article.findOne({ url });
+    const existing = await Article.findOne({ url, user_id: req.user.id });
     if (existing) return res.status(409).json({ error: 'Article already exists' });
 
     // Resolve categories (names -> ids) and create if needed
-    const categoryIds = await resolveCategories(categories);
+    const categoryIds = await resolveCategories(categories, req.user.id);
 
     // 1. Create a placeholder article with 'pending' status
-    const article = new Article({ url, tags, categories: categoryIds, status: 'pending', title: 'Processing...', excerpt: 'Metadata extraction in progress.' });
+    const article = new Article({
+      url,
+      tags,
+      categories: categoryIds,
+      status: 'pending',
+      title: 'Processing...',
+      excerpt: 'Metadata extraction in progress.',
+      user_id: req.user.id
+    });
     await article.save();
 
     // 2. Send immediate response to client
@@ -120,9 +129,9 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/articles/:id - Get single article
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id).populate('categories', 'name slug color');
+    const article = await Article.findOne({ _id: req.params.id, user_id: req.user.id }).populate('categories', 'name slug color');
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json(article);
   } catch (error) {
@@ -132,16 +141,20 @@ router.get('/:id', async (req, res) => {
 });
 
 // PUT /api/articles/:id - Update article
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { is_read, tags, categories } = req.body;
     const updateData = {};
     if (is_read !== undefined) updateData.is_read = is_read;
     if (tags) updateData.tags = tags;
-    if (categories) updateData.categories = await resolveCategories(categories);
+    if (categories) updateData.categories = await resolveCategories(categories, req.user.id);
     updateData.updated_at = new Date();
 
-    const article = await Article.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate('categories', 'name slug color');
+    const article = await Article.findOneAndUpdate(
+      { _id: req.params.id, user_id: req.user.id },
+      updateData,
+      { new: true }
+    ).populate('categories', 'name slug color');
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json(article);
   } catch (error) {
@@ -150,11 +163,16 @@ router.put('/:id', async (req, res) => {
 });
 
 // PUT /api/articles/bulk-categories - Assign categories to multiple articles
-router.put('/bulk-categories', async (req, res) => {
+router.put('/bulk-categories', authenticateToken, async (req, res) => {
   try {
     const { assignments } = req.body; // [{ id, categories: [catId, ...] }]
     if (!Array.isArray(assignments)) return res.status(400).json({ error: 'Invalid payload' });
-    await Promise.all(assignments.map(a => Article.findByIdAndUpdate(a.id, { categories: a.categories, updated_at: new Date() })));
+    await Promise.all(assignments.map(a =>
+      Article.findOneAndUpdate(
+        { _id: a.id, user_id: req.user.id },
+        { categories: a.categories, updated_at: new Date() }
+      )
+    ));
     res.json({ message: 'Bulk category assignment completed' });
   } catch (error) {
     console.error('Bulk category assignment error:', error);
@@ -163,10 +181,10 @@ router.put('/bulk-categories', async (req, res) => {
 });
 
 // DELETE /api/articles/:id - Delete article
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     console.log("Attempting to delete article with ID:", req.params.id);
-    const article = await Article.findByIdAndDelete(req.params.id);
+    const article = await Article.findOneAndDelete({ _id: req.params.id, user_id: req.user.id });
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json({ message: 'Article deleted' });
   } catch (error) {
