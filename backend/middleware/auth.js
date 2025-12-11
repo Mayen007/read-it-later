@@ -13,7 +13,19 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
+      console.error('JWT verification failed:', err.message);
+
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          error: 'Token expired',
+          message: 'Your session has expired. Please login again.'
+        });
+      }
+
+      return res.status(403).json({
+        error: 'Invalid token',
+        message: 'Authentication failed. Please login again.'
+      });
     }
 
     // Attach user ID to request object

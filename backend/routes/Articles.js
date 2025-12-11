@@ -10,15 +10,78 @@ const router = express.Router();
 // Helper: Extract metadata from URL
 const extractMetadata = async (url) => {
   try {
-    const { data } = await axios.get(url, { timeout: 10000 });
+    const { data } = await axios.get(url, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
     const $ = cheerio.load(data);
-    const title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'Untitled';
-    const excerpt = $('meta[property="og:description"]').attr('content') || '';
-    const author = $('meta[property="article:author"]').attr('content') || '';
-    const thumbnail_url = $('meta[property="og:image"]').attr('content') || '/logo.png';
+
+    // Try multiple metadata sources in order of preference
+    const title = $('meta[property="og:title"]').attr('content')
+      || $('meta[name="twitter:title"]').attr('content')
+      || $('title').text().trim()
+      || new URL(url).hostname;
+
+    let excerpt = $('meta[property="og:description"]').attr('content')
+      || $('meta[name="description"]').attr('content')
+      || $('meta[name="twitter:description"]').attr('content')
+      || '';
+
+    // If no meta description, try to extract first paragraph
+    if (!excerpt) {
+      // Try common article paragraph selectors
+      const firstParagraph = $('article p').first().text().trim()
+        || $('.content p').first().text().trim()
+        || $('main p').first().text().trim()
+        || $('p').first().text().trim();
+
+      if (firstParagraph && firstParagraph.length > 50) {
+        // Truncate to reasonable length
+        excerpt = firstParagraph.length > 300
+          ? firstParagraph.substring(0, 297) + '...'
+          : firstParagraph;
+      }
+    }
+
+    const author = $('meta[property="article:author"]').attr('content')
+      || $('meta[name="author"]').attr('content')
+      || '';
+
+    const thumbnail_url = $('meta[property="og:image"]').attr('content')
+      || $('meta[name="twitter:image"]').attr('content')
+      || '/logo.png';
+
     return { title, excerpt, author, thumbnail_url };
   } catch (error) {
-    return { title: 'Error loading article', excerpt: 'Failed to extract content', author: '', thumbnail_url: '/logo.png' };
+    console.error(`Metadata extraction failed for ${url}:`, error.message);
+    // Fallback to URL-based title
+    try {
+      const urlObj = new URL(url);
+      const pathTitle = urlObj.pathname
+        .split('/')
+        .filter(Boolean)
+        .pop()
+        ?.replace(/[-_]/g, ' ')
+        .replace(/\.\w+$/, '') || urlObj.hostname;
+
+      return {
+        title: decodeURIComponent(pathTitle),
+        excerpt: `Article from ${urlObj.hostname}`,
+        author: '',
+        thumbnail_url: '/logo.png'
+      };
+    } catch {
+      return {
+        title: 'Saved Article',
+        excerpt: 'Content extraction unavailable',
+        author: '',
+        thumbnail_url: '/logo.png'
+      };
+    }
   }
 };
 

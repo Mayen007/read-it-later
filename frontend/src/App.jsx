@@ -161,30 +161,40 @@ function AppContent() {
   return (
     <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
       <header className="text-center mb-8 sm:mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex-1"></div>
-          <h1 className="flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500">
+        <div className="flex items-center justify-between mb-4 gap-2">
+          {/* Mobile: compact layout */}
+          <div className="flex sm:hidden items-center gap-2">
+            <BookOpen size={24} className="text-blue-500 shrink-0" />
+            <h1 className="text-xl font-bold text-blue-500 truncate">
+              Read It Later
+            </h1>
+          </div>
+
+          {/* Desktop: centered with side elements */}
+          <div className="hidden sm:flex flex-1"></div>
+          <h1 className="hidden sm:flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500">
             <BookOpen size={32} className="sm:w-10 sm:h-10" />
             Read It Later
           </h1>
-          <div className="flex-1 flex justify-end items-center gap-3">
+
+          <div className="flex flex-1 justify-end items-center gap-2 sm:gap-3">
             <div
-              className="flex items-center gap-2 text-gray-600"
+              className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
               title={user?.email}
             >
-              <User size={20} />
+              <User size={20} className="sm:w-5 sm:h-5" />
             </div>
             <button
               onClick={logout}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm text-gray-600 hover:text-red-600 transition-colors rounded-lg hover:bg-gray-50"
               title="Logout"
             >
-              <LogOut size={18} />
+              <LogOut size={18} className="shrink-0" />
               <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
-        <p className="text-gray-600 text-base sm:text-lg">
+        <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">
           Save and organize articles to read later
         </p>
       </header>
