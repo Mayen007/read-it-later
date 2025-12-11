@@ -22,9 +22,15 @@ const api = axios.create({
   timeout: 30000, // 30 seconds timeout
 });
 
-// Add request interceptor for debugging
+// Add request interceptor to attach auth token
 api.interceptors.request.use(
   (config) => {
+    // Attach access token from localStorage
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     if (import.meta.env.DEV) {
       console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
     }
@@ -33,10 +39,48 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add response interceptor for error handling
+// Add response interceptor for error handling and token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Don't try to refresh tokens on auth endpoints
+    if (originalRequest.url?.includes('/auth/')) {
+      return Promise.reject(error);
+    }
+
+    // If 401 error and we haven't tried refreshing yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Get refresh token from localStorage
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        // Try to refresh the access token
+        const response = await axios.post(`${apiBaseURL}/auth/refresh`, { refreshToken });
+        const { accessToken: newAccessToken } = response.data;
+
+        // Store new access token
+        localStorage.setItem('accessToken', newAccessToken);
+
+        // Retry the original request with new token
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, clear tokens and redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/'; // Redirect to login
+        return Promise.reject(refreshError);
+      }
+    }
+
     if (import.meta.env.DEV) {
       console.error('API Error:', error.response?.data || error.message);
     }
