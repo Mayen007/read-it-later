@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
   ExternalLink,
   Clock,
@@ -8,7 +8,10 @@ import {
   Calendar,
 } from "lucide-react";
 import { formatDistance, parseISO } from "date-fns";
-import ConfirmDialog from "./ConfirmDialog";
+import { optimizeImageUrl, generateSrcSet } from "../utils/imageOptimization";
+
+// Lazy load ConfirmDialog - only loaded when user tries to delete
+const ConfirmDialog = lazy(() => import("./ConfirmDialog"));
 
 const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -127,14 +130,33 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
           </div>
         ) : (
           <picture>
-            <source
-              srcSet={
-                article.thumbnail_url ? article.thumbnail_url : "/logo.webp"
-              }
-              type="image/webp"
-            />
+            {article.thumbnail_url && (
+              <>
+                <source
+                  srcSet={generateSrcSet(article.thumbnail_url, [400, 800], {
+                    quality: 75,
+                    format: "webp",
+                  })}
+                  sizes="(max-width: 640px) 400px, 800px"
+                  type="image/webp"
+                />
+                <source
+                  srcSet={generateSrcSet(article.thumbnail_url, [400, 800], {
+                    quality: 80,
+                  })}
+                  sizes="(max-width: 640px) 400px, 800px"
+                />
+              </>
+            )}
             <img
-              src={article.thumbnail_url || "/logo-optimized.png"}
+              src={
+                article.thumbnail_url
+                  ? optimizeImageUrl(article.thumbnail_url, {
+                      width: 800,
+                      quality: 75,
+                    })
+                  : "/logo-optimized.png"
+              }
               alt={article.title}
               loading="lazy"
               className="w-full h-full object-cover transition-transform hover:scale-105"
@@ -271,18 +293,20 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
       </div>
 
       {showDeleteDialog && (
-        <ConfirmDialog
-          isOpen={showDeleteDialog}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-          title="Delete Article"
-          message={`Are you sure you want to delete "${
-            article.title || "this article"
-          }"?`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          type="danger"
-        />
+        <Suspense fallback={null}>
+          <ConfirmDialog
+            isOpen={showDeleteDialog}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            title="Delete Article"
+            message={`Are you sure you want to delete "${
+              article.title || "this article"
+            }"?`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            type="danger"
+          />
+        </Suspense>
       )}
     </article>
   );

@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BookOpen, LogOut, User } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
-import Login from "./components/Login";
-import Register from "./components/Register";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
+
+// Lazy load auth components - only loaded when needed
+const Login = lazy(() => import("./components/Login"));
+const Register = lazy(() => import("./components/Register"));
 
 function AppContent() {
   const { isAuthenticated, loading: authLoading, logout, user } = useAuth();
@@ -151,10 +153,23 @@ function AppContent() {
 
   // Show login/register screen if not authenticated
   if (!isAuthenticated) {
-    return showRegister ? (
-      <Register onSwitchToLogin={() => setShowRegister(false)} />
-    ) : (
-      <Login onSwitchToRegister={() => setShowRegister(true)} />
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        }
+      >
+        {showRegister ? (
+          <Register onSwitchToLogin={() => setShowRegister(false)} />
+        ) : (
+          <Login onSwitchToRegister={() => setShowRegister(true)} />
+        )}
+      </Suspense>
     );
   }
 
