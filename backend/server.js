@@ -4,7 +4,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const compression = require('compression');
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
 const articlesRoutes = require('./routes/Articles');
 const categoriesRoutes = require('./routes/Categories');
 const authRoutes = require('./routes/Auth');
@@ -13,30 +12,14 @@ const connectDb = require('./config/db');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // Trust proxy for production deployment (Render, Heroku, etc.)
 app.set('trust proxy', 1);
 
 connectDb();
 
-// Middleware - Performance & Security
-app.use(helmet({
-  contentSecurityPolicy: false, // Allow embedding if needed
-  crossOriginEmbedderPolicy: false
-}));
-app.use(compression({
-  filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
-      return false;
-    }
-    return compression.filter(req, res);
-  },
-  level: 6, // Balance between speed and compression ratio
-}));
-app.use(mongoSanitize()); // Prevent NoSQL injection
-
-// CORS configuration
+// CORS configuration - MUST come first
 app.use(cors({
   origin: function (origin, callback) {
     const allowedOrigins = [
@@ -51,11 +34,31 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+// Body parser middleware
 app.use(express.json());
+
+// Security & Performance middleware - After CORS
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6,
+}));
 
 // Routes
 app.use('/api/auth', authRoutes);
