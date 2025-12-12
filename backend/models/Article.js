@@ -21,6 +21,12 @@ const articleSchema = new mongoose.Schema({
 // Compound unique index: same URL can exist for different users
 articleSchema.index({ url: 1, user_id: 1 }, { unique: true });
 
+// Additional performance indexes
+articleSchema.index({ user_id: 1, created_at: -1 }); // For sorting by date
+articleSchema.index({ user_id: 1, status: 1 }); // For filtering by status
+articleSchema.index({ user_id: 1, is_read: 1 }); // For filtering read/unread
+articleSchema.index({ categories: 1 }); // For category filtering
+
 // Create the Article model
 const Article = mongoose.model('Article', articleSchema);
 

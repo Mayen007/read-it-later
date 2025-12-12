@@ -11,12 +11,15 @@ const router = express.Router();
 const extractMetadata = async (url) => {
   try {
     const { data } = await axios.get(url, {
-      timeout: 10000,
+      timeout: 5000, // Reduced from 10s to 5s for faster response
+      maxRedirects: 3, // Limit redirects
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.9',
-      }
+        'Accept-Encoding': 'gzip, deflate', // Enable compression
+      },
+      decompress: true, // Auto-decompress responses
     });
     const $ = cheerio.load(data);
 
@@ -94,9 +97,16 @@ router.get('/', authenticateToken, async (req, res) => {
     if (search) query.title = { $regex: search, $options: 'i' };
     if (category) query.categories = category; // filter by category id
 
-    // Populate category names for convenience in responses
-    const articles = await Article.find(query).populate('categories', 'name slug color').sort({ created_at: -1 });
-    console.log("Articles retrieved from DB:", articles.map(a => a._id));
+    // Optimize query with lean() and select only needed fields
+    const articles = await Article.find(query)
+      .populate('categories', 'name slug color')
+      .select('-__v') // Exclude version key
+      .sort({ created_at: -1 })
+      .lean() // Return plain JavaScript objects for faster serialization
+      .exec();
+
+    // Set cache headers for browser caching (30 seconds)
+    res.set('Cache-Control', 'private, max-age=30');
     res.json(articles);
   } catch (error) {
     console.error("Error fetching articles:", error);
@@ -194,8 +204,15 @@ router.post('/', authenticateToken, async (req, res) => {
 // GET /api/articles/:id - Get single article
 router.get('/:id', authenticateToken, async (req, res) => {
   try {
-    const article = await Article.findOne({ _id: req.params.id, user_id: req.user.id }).populate('categories', 'name slug color');
+    const article = await Article.findOne({ _id: req.params.id, user_id: req.user.id })
+      .populate('categories', 'name slug color')
+      .select('-__v')
+      .lean()
+      .exec();
     if (!article) return res.status(404).json({ error: 'Article not found' });
+
+    // Cache for 1 minute
+    res.set('Cache-Control', 'private, max-age=60');
     res.json(article);
   } catch (error) {
     console.error('Error fetching article:', error);
@@ -216,7 +233,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const article = await Article.findOneAndUpdate(
       { _id: req.params.id, user_id: req.user.id },
       updateData,
-      { new: true }
+      { new: true, lean: true }
     ).populate('categories', 'name slug color');
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json(article);

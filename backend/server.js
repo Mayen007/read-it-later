@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const compression = require('compression');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 const articlesRoutes = require('./routes/Articles');
 const categoriesRoutes = require('./routes/Categories');
 const authRoutes = require('./routes/Auth');
@@ -17,7 +20,23 @@ app.set('trust proxy', 1);
 
 connectDb();
 
-// Middleware
+// Middleware - Performance & Security
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow embedding if needed
+  crossOriginEmbedderPolicy: false
+}));
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6, // Balance between speed and compression ratio
+}));
+app.use(mongoSanitize()); // Prevent NoSQL injection
+
+// CORS configuration
 app.use(cors({
   origin: function (origin, callback) {
     const allowedOrigins = [
