@@ -126,16 +126,25 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             <Trash2 size={48} className="text-red-500" />
           </div>
         ) : (
-          <img
-            src={article.thumbnail_url || "/logo.png"}
-            alt={article.title}
-            className="w-full h-full object-cover transition-transform hover:scale-105"
-            onError={(e) => {
-              if (e.target.src !== "/logo.png") {
-                e.target.src = "/logo.png";
+          <picture>
+            <source
+              srcSet={
+                article.thumbnail_url ? article.thumbnail_url : "/logo.webp"
               }
-            }}
-          />
+              type="image/webp"
+            />
+            <img
+              src={article.thumbnail_url || "/logo-optimized.png"}
+              alt={article.title}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform hover:scale-105"
+              onError={(e) => {
+                if (!e.target.src.includes("logo-optimized.png")) {
+                  e.target.src = "/logo-optimized.png";
+                }
+              }}
+            />
+          </picture>
         )}
       </div>
 
