@@ -94,6 +94,8 @@ const AddArticleForm = ({ onAddArticle }) => {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 mb-4">
           <input
+            id="article-url"
+            name="article-url"
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}

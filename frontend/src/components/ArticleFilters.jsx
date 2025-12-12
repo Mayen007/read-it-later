@@ -17,6 +17,8 @@ const ArticleFilters = ({
           className="absolute left-3 text-gray-400 pointer-events-none"
         />
         <input
+          id="search-articles"
+          name="search-articles"
           type="search"
           placeholder="Search articles..."
           value={searchTerm}

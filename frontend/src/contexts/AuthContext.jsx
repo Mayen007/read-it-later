@@ -8,33 +8,24 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load tokens from localStorage on mount and validate
+  // Load tokens from localStorage on mount (optimistic, no validation)
   useEffect(() => {
-    const validateAndLoadTokens = async () => {
+    const loadTokens = () => {
       const storedAccessToken = localStorage.getItem("accessToken");
       const storedRefreshToken = localStorage.getItem("refreshToken");
       const storedUser = localStorage.getItem("user");
 
       if (storedAccessToken && storedRefreshToken && storedUser) {
-        try {
-          // Try to validate token by making a simple API call
-          await api.get("/articles");
-          // If successful, tokens are valid
-          setAccessToken(storedAccessToken);
-          setRefreshToken(storedRefreshToken);
-          setUser(JSON.parse(storedUser));
-        } catch {
-          // If validation fails, clear invalid tokens
-          console.log("Invalid tokens detected, clearing...");
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("user");
-        }
+        // Optimistically load tokens without validation
+        // API interceptor will handle 401/403 errors if invalid
+        setAccessToken(storedAccessToken);
+        setRefreshToken(storedRefreshToken);
+        setUser(JSON.parse(storedUser));
       }
       setLoading(false);
     };
 
-    validateAndLoadTokens();
+    loadTokens();
   }, []);
 
   const login = async (email, password) => {
