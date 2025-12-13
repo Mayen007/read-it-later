@@ -9,6 +9,14 @@ export default function Register({ onSwitchToLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Password requirement checks
+  const passwordChecks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
   const validatePassword = (pwd) => {
     if (pwd.length < 8) return "Password must be at least 8 characters long";
     if (!/[A-Z]/.test(pwd))
@@ -46,105 +54,159 @@ export default function Register({ onSwitchToLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Start building your read-it-later library
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-2">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="text-xs text-gray-600 space-y-1">
-            <p>Password requirements:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>At least 8 characters</li>
-              <li>One uppercase letter</li>
-              <li>One number</li>
-              <li>One special character</li>
-            </ul>
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
+    <>
+      <div className="h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
           <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Creating account..." : "Register"}
-            </button>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Create your account
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Start building your read-it-later library
+            </p>
           </div>
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-md shadow-sm space-y-2">
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="confirm-password" className="sr-only">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={onSwitchToLogin}
-              className="text-sm text-blue-600 hover:text-blue-500 cursor-pointer"
-            >
-              Already have an account? Sign in
-            </button>
-          </div>
-        </form>
+            <div className="text-xs space-y-1">
+              <p className="text-gray-600">Password requirements:</p>
+              <ul className="space-y-1">
+                <li
+                  className={`flex items-center gap-2 ${
+                    !password
+                      ? "text-gray-400"
+                      : passwordChecks.length
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  <span>
+                    {!password ? "○" : passwordChecks.length ? "✓" : "✗"}
+                  </span>
+                  <span>At least 8 characters</span>
+                </li>
+                <li
+                  className={`flex items-center gap-2 ${
+                    !password
+                      ? "text-gray-400"
+                      : passwordChecks.uppercase
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  <span>
+                    {!password ? "○" : passwordChecks.uppercase ? "✓" : "✗"}
+                  </span>
+                  <span>One uppercase letter</span>
+                </li>
+                <li
+                  className={`flex items-center gap-2 ${
+                    !password
+                      ? "text-gray-400"
+                      : passwordChecks.number
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  <span>
+                    {!password ? "○" : passwordChecks.number ? "✓" : "✗"}
+                  </span>
+                  <span>One number</span>
+                </li>
+                <li
+                  className={`flex items-center gap-2 ${
+                    !password
+                      ? "text-gray-400"
+                      : passwordChecks.special
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  <span>
+                    {!password ? "○" : passwordChecks.special ? "✓" : "✗"}
+                  </span>
+                  <span>One special character</span>
+                </li>
+              </ul>
+            </div>
+
+            {error && (
+              <div className="rounded-md bg-red-50 p-4">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Creating account..." : "Register"}
+              </button>
+            </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={onSwitchToLogin}
+                className="text-sm text-blue-600 hover:text-blue-500 cursor-pointer"
+              >
+                Already have an account? Sign in
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
