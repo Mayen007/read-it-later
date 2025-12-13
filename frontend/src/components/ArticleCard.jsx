@@ -129,44 +129,17 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             <Trash2 size={48} className="text-red-500" />
           </div>
         ) : (
-          <picture>
-            {article.thumbnail_url && (
-              <>
-                <source
-                  srcSet={generateSrcSet(article.thumbnail_url, [400, 800], {
-                    quality: 75,
-                    format: "webp",
-                  })}
-                  sizes="(max-width: 640px) 400px, 800px"
-                  type="image/webp"
-                />
-                <source
-                  srcSet={generateSrcSet(article.thumbnail_url, [400, 800], {
-                    quality: 80,
-                  })}
-                  sizes="(max-width: 640px) 400px, 800px"
-                />
-              </>
-            )}
-            <img
-              src={
-                article.thumbnail_url
-                  ? optimizeImageUrl(article.thumbnail_url, {
-                      width: 800,
-                      quality: 75,
-                    })
-                  : "/logo-optimized.png"
+          <img
+            src={article.thumbnail_url || "/logo-optimized.png"}
+            alt={article.title}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+            onError={(e) => {
+              if (!e.target.src.includes("logo-optimized.png")) {
+                e.target.src = "/logo-optimized.png";
               }
-              alt={article.title}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform hover:scale-105"
-              onError={(e) => {
-                if (!e.target.src.includes("logo-optimized.png")) {
-                  e.target.src = "/logo-optimized.png";
-                }
-              }}
-            />
-          </picture>
+            }}
+          />
         )}
       </div>
 
