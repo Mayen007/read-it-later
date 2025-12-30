@@ -46,9 +46,18 @@ function AppContent() {
           "Failed to load articles. Make sure the backend server is running on port 5000."
         );
       } else {
-        setError(
-          "Failed to load articles. The service might be temporarily unavailable. Please try again in a moment."
-        );
+        // More informative error message about cold starts
+        const isTimeout =
+          error.code === "ECONNABORTED" || error.message?.includes("timeout");
+        if (isTimeout) {
+          setError(
+            "The server is waking up from sleep (this can take 30-60 seconds on first load). Please wait a moment and try again."
+          );
+        } else {
+          setError(
+            "Failed to load articles. The service might be waking up. Please try again in a moment."
+          );
+        }
       }
     } finally {
       setIsLoading(false);

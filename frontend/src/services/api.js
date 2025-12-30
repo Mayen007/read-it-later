@@ -19,8 +19,40 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 seconds timeout
+  timeout: 60000, // 60 seconds timeout (increased for cold starts)
 });
+
+// Retry configuration for handling cold starts
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second base delay
+
+/**
+ * Implements exponential backoff retry logic
+ * @param {Function} fn - Function to retry
+ * @param {number} retries - Number of retries remaining
+ * @returns {Promise} Result of the function
+ */
+const retryWithBackoff = async (fn, retries = MAX_RETRIES) => {
+  try {
+    return await fn();
+  } catch (error) {
+    // Don't retry on client errors (4xx) except 408 (timeout) and 429 (rate limit)
+    const status = error.response?.status;
+    if (status && status >= 400 && status < 500 && status !== 408 && status !== 429) {
+      throw error;
+    }
+
+    if (retries > 0) {
+      const delay = RETRY_DELAY * (MAX_RETRIES - retries + 1); // Exponential backoff
+      if (import.meta.env.DEV) {
+        console.log(`Retrying request in ${delay}ms... (${retries} retries left)`);
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return retryWithBackoff(fn, retries - 1);
+    }
+    throw error;
+  }
+};
 
 // Add request interceptor to attach auth token
 api.interceptors.request.use(
@@ -111,7 +143,8 @@ export const articlesAPI = {
 
     const queryString = params.toString();
     const url = `/articles${queryString ? `?${queryString}` : ''}`;
-    return api.get(url);
+    // Use retry logic for initial load (handles cold starts)
+    return retryWithBackoff(() => api.get(url));
   },
 
   /**

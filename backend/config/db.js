@@ -6,8 +6,10 @@ const connectDB = async () => {
       // Connection pool settings for better performance
       maxPoolSize: 10,
       minPoolSize: 2,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
+      // Increased timeouts to handle cold starts (when server wakes up after inactivity)
+      serverSelectionTimeoutMS: 30000, // 30s - allows time for cold start
+      socketTimeoutMS: 60000, // 60s - prevents premature connection drops
+      connectTimeoutMS: 30000, // 30s - initial connection timeout
       // Optimization flags
       compressors: ['zlib'],
     });

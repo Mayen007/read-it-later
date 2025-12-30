@@ -65,9 +65,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/articles', articlesRoutes);
 app.use('/api/categories', categoriesRoutes);
 
-// Health check
+// Health check with database status
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', database: 'MongoDB' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.json({
+    status: dbStatus === 'connected' ? 'healthy' : 'unhealthy',
+    database: 'MongoDB',
+    dbStatus,
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, () => {
