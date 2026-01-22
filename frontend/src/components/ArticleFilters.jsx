@@ -1,4 +1,11 @@
-import { Search, Filter, CheckCircle, Circle, BookOpen } from "lucide-react";
+import {
+  Search,
+  Filter,
+  CheckCircle,
+  Circle,
+  BookOpen,
+  Tag,
+} from "lucide-react";
 
 const ArticleFilters = ({
   searchTerm,
@@ -8,6 +15,9 @@ const ArticleFilters = ({
   totalCount,
   readCount,
   unreadCount,
+  categories = [],
+  selectedCategory,
+  onCategoryChange,
 }) => {
   return (
     <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-3 sm:gap-4">
@@ -75,6 +85,66 @@ const ArticleFilters = ({
           <span className="whitespace-nowrap">Read ({readCount})</span>
         </button>
       </div>
+
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div className="border-t border-gray-200 pt-3 sm:pt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Tag size={16} className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">
+              Filter by Category
+            </span>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => onCategoryChange(null)}
+              aria-pressed={selectedCategory === null}
+              aria-label="Show all categories"
+              className={`px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+                selectedCategory === null
+                  ? "bg-gray-800 border-gray-800 text-white"
+                  : "bg-white border-gray-200 text-gray-600 hover:border-gray-800 hover:text-gray-800"
+              }`}
+            >
+              All Categories
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category._id}
+                onClick={() => onCategoryChange(category._id)}
+                aria-pressed={selectedCategory === category._id}
+                aria-label={`Filter by ${category.name}`}
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+                  selectedCategory === category._id
+                    ? "border-gray-800 text-white"
+                    : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedCategory === category._id
+                      ? category.color || "#1f2937"
+                      : "white",
+                  borderColor:
+                    selectedCategory === category._id
+                      ? category.color || "#1f2937"
+                      : "#e5e7eb",
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{
+                    backgroundColor:
+                      selectedCategory === category._id
+                        ? "white"
+                        : category.color || "#3b82f6",
+                  }}
+                />
+                <span className="whitespace-nowrap">{category.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
