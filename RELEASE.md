@@ -1,5 +1,49 @@
 # Release Process & Roadmap
 
+## v2.1.0 - Category Management UI Release
+
+### New Features
+
+- **Complete Category Management Interface**
+  - Full CRUD operations: Create, edit, and delete categories
+  - Color picker with 10 preset colors for visual organization
+  - Inline editing with validation and duplicate prevention
+  - Confirmation dialog for safe category deletion
+  - Toggle visibility in app header (Tag icon button)
+
+- **Enhanced Article Organization**
+  - Multi-select category assignment using react-select dropdown
+  - Inline category editing directly on article cards
+  - Visual category badges with custom colors
+  - Save/Cancel controls for category editing workflow
+
+- **Advanced Filtering**
+  - Category filter buttons with colored dot indicators
+  - "All Categories" option to clear active filters
+  - Category-specific empty states
+  - Real-time article filtering by selected category
+
+- **Improved User Experience**
+  - Empty state guidance for new users
+  - Smooth transitions and hover effects
+  - Consistent error handling across all operations
+  - Clear visual feedback for all interactions
+
+### Technical Improvements
+
+- Consolidated handleUpdateArticle function (dual-purpose for polling and updates)
+- Removed duplicate function declarations
+- Enhanced error logging and handling
+- Optimized component imports (removed unused dependencies)
+
+### Breaking Changes
+
+None - fully backward compatible with v2.0.0
+
+### Migration
+
+No migration required - all changes are UI enhancements
+
 ## v2.0.0 - Authentication Release
 
 ### New Features
@@ -50,12 +94,14 @@
 
 - ✅ User authentication (Completed in v2.0.0)
 - ✅ Categories/tags support (Completed in v1.5.0)
+- ✅ Category management UI (Completed in v2.1.0)
 - Article highlights and notes
 - Improved mobile experience
 - Bulk import/export
 - Social sharing features
 - Reading statistics and analytics
 - Dark mode theme
+- Export/import categories
 
 ---
 

@@ -5,13 +5,16 @@ A full-stack web application to save and organize articles for later reading, bu
 ## Features
 
 - 🔐 **User Authentication**: Secure JWT-based login and registration with multi-user support
-- 📝 **Save Articles**: Add articles by URL with automatic metadata extraction
-- 🔍 **Search & Filter**: Search through saved articles and filter by read/unread status
-- ✅ **Mark as Read**: Track your reading progress
+- 📝 **Save Articles**: Add articles by URL with automatic metadata extraction (title, excerpt, thumbnail)
+- 🏷️ **Category Management**: Create, edit, and delete custom categories with color coding
+- 📋 **Article Organization**: Assign multiple categories to articles with inline editing
+- 🔍 **Search & Filter**: Search through saved articles and filter by read/unread status or category
+- ✅ **Mark as Read**: Track your reading progress with read/unread status
 - 🗑️ **Delete Articles**: Remove articles you no longer need
 - 🌐 **Chrome Extension**: Save current page directly from your browser with authenticated requests
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
 - 🔄 **Token Refresh**: Automatic access token refresh for seamless user experience
+- ⚡ **Performance Optimized**: Cold start handling, retry logic, connection pooling, and compression
 
 ## Project Structure
 
@@ -101,7 +104,7 @@ The backend will be available at `http://localhost:5000`
    npm run dev
    ```
 
-The frontend will be available at `http://localhost:3000`
+The frontend will be available at `http://localhost:3000` (configured via Vite's server.port setting)
 
 ### Chrome Extension Setup
 
@@ -145,18 +148,22 @@ The frontend will be available at `http://localhost:3000`
 - **Mongoose**: MongoDB ODM for schema and queries
 - **JWT (jsonwebtoken)**: Token-based authentication
 - **bcrypt**: Password hashing and security
-- **express-rate-limit**: Rate limiting for auth endpoints
-- **CORS**: Cross-origin resource sharing with whitelist
-- **Cheerio**: Web scraping for metadata extraction
-- **Axios**: HTTP library for fetching web pages
+- **express-rate-limit**: Rate limiting for auth endpoints (5 requests per 15 minutes)
+- **CORS**: Cross-origin resource sharing with whitelist configuration
+- **Cheerio**: HTML parsing for metadata extraction from web pages
+- **Axios**: HTTP library for fetching web pages during metadata extraction
+- **Helmet**: Security middleware for HTTP headers
+- **Compression**: Response compression middleware
 
 ### Frontend
 
-- **React**: JavaScript library for building user interfaces
+- **React 19**: JavaScript library for building user interfaces
 - **Vite**: Fast build tool and development server
-- **Axios**: HTTP client for API requests
-- **Lucide React**: Icon library
+- **Axios**: HTTP client for API requests with interceptors
+- **Lucide React**: Icon library for UI components
 - **date-fns**: Date utility library
+- **TailwindCSS**: Utility-first CSS framework
+- **react-select**: Accessible dropdown components
 
 ### Extension
 
@@ -167,32 +174,48 @@ The frontend will be available at `http://localhost:3000`
 
 ### Running in Development Mode
 
-1. Start the backend server (port 5000)
-2. Start the frontend development server (port 3000)
+1. Start the backend server (runs on port 5000)
+2. Start the frontend development server (runs on port 3000)
 3. Load the Chrome extension in developer mode
 
-The Vite development server is configured with a proxy to forward `/api` requests to the backend.
+The Vite development server is configured with a proxy to forward `/api` requests to the backend at `localhost:5000`.
+
+### Testing
+
+- **Backend API**: Use the health check endpoint at `http://localhost:5000/health` to verify database connectivity
+- **Frontend**: Access the web app at `http://localhost:3000`
+- **Extension**: Test authentication and article saving directly from the browser
 
 ### Building for Production
 
-#### Backend
+#### Backend (Render)
 
-Deploy the backend to Render, Railway, or Heroku. Set your environment variables (`MONGODB_URI`, `PORT`, `CLIENT_URL`).
+The backend is deployed on Render at `https://readit-backend-r69u.onrender.com`.
 
-#### Frontend
+Environment variables required:
 
-Deploy the frontend to Netlify or Vercel. Set `VITE_API_URL` in your environment to your backend API URL.
+- `MONGODB_URI` - MongoDB Atlas connection string
+- `PORT` - Port number (defaults to 5000)
+- `CLIENT_URL` - Frontend URL for CORS
+- `ACCESS_TOKEN_SECRET` - JWT access token secret (64-char hex string)
+- `REFRESH_TOKEN_SECRET` - JWT refresh token secret (64-char hex string)
+
+#### Frontend (Netlify)
+
+The frontend is deployed on Netlify at `https://readitt.netlify.app`.
+
+To build locally:
 
 ```bash
 cd frontend
 npm run build
 ```
 
-The built files will be in the `frontend/dist` directory.
+The built files will be in the `frontend/dist` directory. Set `VITE_API_URL` environment variable in Netlify to point to your backend API.
 
 #### Extension
 
-Update API and frontend URLs in `background.js` and `popup.js` to your live deployment URLs. Zip the `extension/` folder and upload to the Chrome Web Store.
+Update `API_BASE_URL` in `background.js` and `popup.js` to your production backend URL (`https://readit-backend-r69u.onrender.com/api`). For Chrome Web Store distribution, zip the `extension/` folder and upload following Chrome's extension publishing guidelines.
 
 ## Contributing
 
