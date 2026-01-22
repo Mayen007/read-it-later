@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { BookOpen, Lock, Zap } from "lucide-react";
 
 export default function Register({ onSwitchToLogin }) {
   const { register } = useAuth();
@@ -54,11 +55,15 @@ export default function Register({ onSwitchToLogin }) {
   };
 
   return (
-    <>
-      <div className="h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex">
+      {/* Left side - Form */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 bg-white">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <div className="flex items-center justify-center mb-6">
+              <BookOpen size={48} className="text-blue-500" />
+            </div>
+            <h2 className="text-center text-3xl font-extrabold text-gray-900">
               Create your account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -207,6 +212,48 @@ export default function Register({ onSwitchToLogin }) {
           </form>
         </div>
       </div>
-    </>
+
+      {/* Right side - Visual */}
+      <div className="hidden lg:flex flex-1 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 items-center justify-center p-12">
+        <div className="max-w-md text-center space-y-8">
+          <h2 className="text-4xl font-bold text-gray-900">
+            Start Organizing Today
+          </h2>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            Join readers who are taking control of their content.
+          </p>
+
+          <div className="space-y-6 pt-8">
+            <div className="flex items-start gap-4 text-left">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                <Lock className="text-green-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Completely Free
+                </h3>
+                <p className="text-sm text-gray-600">
+                  No paywalls, no premium tiers, no limits
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 text-left">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                <Zap className="text-yellow-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Get Started in Seconds
+                </h3>
+                <p className="text-sm text-gray-600">
+                  No complex setup, just start saving
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { BookOpen, Chrome, FolderOpen } from "lucide-react";
 
 export default function Login({ onSwitchToRegister }) {
   const { login } = useAuth();
@@ -23,11 +24,15 @@ export default function Login({ onSwitchToRegister }) {
   };
 
   return (
-    <>
-      <div className="h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex">
+      {/* Left side - Form */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 bg-white">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <div className="flex items-center justify-center mb-6">
+              <BookOpen size={48} className="text-blue-500" />
+            </div>
+            <h2 className="text-center text-3xl font-extrabold text-gray-900">
               Sign in to your account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -98,6 +103,46 @@ export default function Login({ onSwitchToRegister }) {
           </form>
         </div>
       </div>
-    </>
+
+      {/* Right side - Visual */}
+      <div className="hidden lg:flex flex-1 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 items-center justify-center p-12">
+        <div className="max-w-md text-center space-y-8">
+          <h2 className="text-4xl font-bold text-gray-900">Welcome Back</h2>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            Your saved articles are waiting for you.
+          </p>
+
+          <div className="space-y-6 pt-8">
+            <div className="flex items-start gap-4 text-left">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                <Chrome className="text-blue-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Save from Anywhere
+                </h3>
+                <p className="text-sm text-gray-600">
+                  One click to save articles while browsing
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 text-left">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                <FolderOpen className="text-indigo-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Visual Organization
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Color-coded categories for easy sorting
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
