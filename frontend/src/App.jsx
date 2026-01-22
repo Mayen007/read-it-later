@@ -1,7 +1,8 @@
 import { useState, useEffect, lazy, Suspense } from "react";
-import { BookOpen, LogOut, User } from "lucide-react";
+import { BookOpen, LogOut, User, Tag, X } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
+import CategoryManager from "./components/CategoryManager";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
@@ -14,14 +15,17 @@ function AppContent() {
   const { isAuthenticated, loading: authLoading, logout, user } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
   const [articles, setArticles] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [pollingIntervals, setPollingIntervals] = useState({}); // To store interval IDs for polling
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
 
-  // Load articles on component mount
+  // Load articles and categories on component mount
   useEffect(() => {
     if (isAuthenticated) {
       loadArticles();
+      loadCategories();
     }
 
     // Cleanup polling intervals on unmount
@@ -43,7 +47,7 @@ function AppContent() {
       const isDev = import.meta.env.DEV;
       if (isDev) {
         setError(
-          "Failed to load articles. Make sure the backend server is running on port 5000."
+          "Failed to load articles. Make sure the backend server is running on port 5000.",
         );
       } else {
         // More informative error message about cold starts
@@ -51,11 +55,11 @@ function AppContent() {
           error.code === "ECONNABORTED" || error.message?.includes("timeout");
         if (isTimeout) {
           setError(
-            "The server is waking up from sleep (this can take 30-60 seconds on first load). Please wait a moment and try again."
+            "The server is waking up from sleep (this can take 30-60 seconds on first load). Please wait a moment and try again.",
           );
         } else {
           setError(
-            "Failed to load articles. The service might be waking up. Please try again in a moment."
+            "Failed to load articles. The service might be waking up. Please try again in a moment.",
           );
         }
       }
@@ -64,11 +68,23 @@ function AppContent() {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const response = await articlesAPI.getCategories();
+      setCategories(response.data || []);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error loading categories:", error);
+      }
+      // Silently fail - categories are optional
+    }
+  };
+
   const handleUpdateArticle = (updatedArticle) => {
     setArticles((prev) =>
       prev.map((article) =>
-        article._id === updatedArticle._id ? updatedArticle : article
-      )
+        article._id === updatedArticle._id ? updatedArticle : article,
+      ),
     );
   };
 
@@ -122,8 +138,8 @@ function AppContent() {
     await articlesAPI.update(id, { is_read: isRead });
     setArticles((prev) =>
       prev.map((article) =>
-        article._id === id ? { ...article, is_read: isRead } : article
-      )
+        article._id === id ? { ...article, is_read: isRead } : article,
+      ),
     );
   };
 
@@ -135,7 +151,7 @@ function AppContent() {
       if (err?.response?.status === 404) {
         if (import.meta.env.DEV) {
           console.warn(
-            `Article ${id} was not found on server; removing locally.`
+            `Article ${id} was not found on server; removing locally.`,
           );
         }
       } else {
@@ -146,6 +162,26 @@ function AppContent() {
       // Always remove the article locally to keep UI in sync and avoid repeated delete calls
       setArticles((prev) => prev.filter((article) => article._id !== id));
     }
+  };
+
+  // Category handlers
+  const handleCreateCategory = async (name, color) => {
+    const response = await articlesAPI.createCategory(name, color);
+    setCategories((prev) => [...prev, response.data]);
+  };
+
+  const handleUpdateCategory = async (id, data) => {
+    const response = await articlesAPI.updateCategory(id, data);
+    setCategories((prev) =>
+      prev.map((cat) => (cat._id === id ? response.data : cat)),
+    );
+  };
+
+  const handleDeleteCategory = async (id) => {
+    await articlesAPI.deleteCategory(id);
+    setCategories((prev) => prev.filter((cat) => cat._id !== id));
+    // Reload articles to update category references
+    loadArticles();
   };
 
   // Show loading screen while checking auth
@@ -203,6 +239,26 @@ function AppContent() {
             </h1>
 
             <div className="flex flex-1 justify-end items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => setShowCategoryManager(!showCategoryManager)}
+                className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm rounded-lg cursor-pointer transition-all ${
+                  showCategoryManager
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                }`}
+                title={
+                  showCategoryManager ? "Hide Categories" : "Manage Categories"
+                }
+              >
+                {showCategoryManager ? (
+                  <X size={18} className="shrink-0" />
+                ) : (
+                  <Tag size={18} className="shrink-0" />
+                )}
+                <span className="hidden sm:inline">
+                  {showCategoryManager ? "Close" : "Categories"}
+                </span>
+              </button>
               <div
                 className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
                 title={user?.email}
@@ -225,6 +281,16 @@ function AppContent() {
         </header>
 
         <main className="flex flex-col gap-6 sm:gap-8">
+          {/* Category Manager - Collapsible */}
+          {showCategoryManager && (
+            <CategoryManager
+              categories={categories}
+              onCreateCategory={handleCreateCategory}
+              onUpdateCategory={handleUpdateCategory}
+              onDeleteCategory={handleDeleteCategory}
+            />
+          )}
+
           <AddArticleForm onAddArticle={handleAddArticle} />
 
           {error && (
