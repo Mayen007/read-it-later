@@ -80,12 +80,25 @@ function AppContent() {
     }
   };
 
-  const handleUpdateArticle = (updatedArticle) => {
-    setArticles((prev) =>
-      prev.map((article) =>
-        article._id === updatedArticle._id ? updatedArticle : article,
-      ),
-    );
+  const handleUpdateArticle = async (idOrArticle, data = null) => {
+    // If called with an article object (from polling), just update state
+    if (typeof idOrArticle === "object" && idOrArticle._id) {
+      setArticles((prev) =>
+        prev.map((article) =>
+          article._id === idOrArticle._id ? idOrArticle : article,
+        ),
+      );
+    } else {
+      // If called with id and data (from category editing), make API call
+      const response = await articlesAPI.update(idOrArticle, data);
+      setArticles((prev) =>
+        prev.map((article) =>
+          article._id === idOrArticle
+            ? { ...article, ...response.data }
+            : article,
+        ),
+      );
+    }
   };
 
   const startPolling = (articleId) => {
@@ -309,6 +322,8 @@ function AppContent() {
             articles={articles}
             onToggleRead={handleToggleRead}
             onDeleteArticle={handleDeleteArticle}
+            onUpdateArticle={handleUpdateArticle}
+            categories={categories}
             isLoading={isLoading}
           />
         </main>

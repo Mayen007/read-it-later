@@ -8,6 +8,8 @@ const ArticlesList = ({
   onToggleRead,
   onDeleteArticle,
   isLoading,
+  categories = [],
+  onUpdateArticle,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
@@ -32,13 +34,13 @@ const ArticlesList = ({
           article.title?.toLowerCase().includes(term) ||
           article.excerpt?.toLowerCase().includes(term) ||
           article.author?.toLowerCase().includes(term) ||
-          article.url?.toLowerCase().includes(term)
+          article.url?.toLowerCase().includes(term),
       );
     }
 
     // Sort by saved date (newest first)
     return filtered.sort(
-      (a, b) => new Date(b.saved_date) - new Date(a.saved_date)
+      (a, b) => new Date(b.saved_date) - new Date(a.saved_date),
     );
   }, [articles, searchTerm, filter]);
 
@@ -111,6 +113,8 @@ const ArticlesList = ({
                 article={article}
                 onToggleRead={onToggleRead}
                 onDelete={onDeleteArticle}
+                categories={categories}
+                onUpdateArticle={onUpdateArticle}
               />
             </div>
           ))}

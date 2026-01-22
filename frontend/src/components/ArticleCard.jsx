@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import Select from "react-select";
 import {
   ExternalLink,
   Clock,
@@ -6,6 +7,7 @@ import {
   Trash2,
   User,
   Calendar,
+  Tag,
 } from "lucide-react";
 import { formatDistance, parseISO } from "date-fns";
 import { optimizeImageUrl, generateSrcSet } from "../utils/imageOptimization";
@@ -13,10 +15,18 @@ import { optimizeImageUrl, generateSrcSet } from "../utils/imageOptimization";
 // Lazy load ConfirmDialog - only loaded when user tries to delete
 const ConfirmDialog = lazy(() => import("./ConfirmDialog"));
 
-const ArticleCard = ({ article, onToggleRead, onDelete }) => {
+const ArticleCard = ({
+  article,
+  onToggleRead,
+  onDelete,
+  categories = [],
+  onUpdateArticle,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isEditingCategories, setIsEditingCategories] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   // Update current time every second for real-time timestamp updates
   useEffect(() => {
@@ -31,6 +41,20 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
   useEffect(() => {
     setCurrentTime(new Date());
   }, [article.saved_date, article.id]); // Trigger when saved_date or id changes
+
+  // Initialize selected categories from article
+  useEffect(() => {
+    if (article.categories && article.categories.length > 0) {
+      const selected = article.categories.map((cat) => ({
+        value: cat._id || cat,
+        label: cat.name || cat,
+        color: cat.color,
+      }));
+      setSelectedCategories(selected);
+    } else {
+      setSelectedCategories([]);
+    }
+  }, [article.categories]);
 
   const handleToggleRead = async () => {
     setIsLoading(true);
@@ -64,6 +88,42 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
 
   const handleCancelDelete = () => {
     setShowDeleteDialog(false);
+  };
+
+  const handleEditCategories = () => {
+    setIsEditingCategories(true);
+  };
+
+  const handleCancelEditCategories = () => {
+    setIsEditingCategories(false);
+    // Reset to article's current categories
+    if (article.categories && article.categories.length > 0) {
+      const selected = article.categories.map((cat) => ({
+        value: cat._id || cat,
+        label: cat.name || cat,
+        color: cat.color,
+      }));
+      setSelectedCategories(selected);
+    } else {
+      setSelectedCategories([]);
+    }
+  };
+
+  const handleSaveCategories = async () => {
+    setIsLoading(true);
+    try {
+      const categoryIds = selectedCategories.map((cat) => cat.value);
+      if (onUpdateArticle) {
+        await onUpdateArticle(article._id, { categories: categoryIds });
+      }
+      setIsEditingCategories(false);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error updating categories:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -104,7 +164,7 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
           "Date parsing error:",
           error,
           "for dateString:",
-          dateString
+          dateString,
         );
       }
       return dateString;
@@ -217,20 +277,79 @@ const ArticleCard = ({ article, onToggleRead, onDelete }) => {
             )}
         </div>
 
-        {article.categories && article.categories.length > 0 && (
-          <div className="flex gap-2 flex-wrap mt-2 mb-2">
-            {article.categories.map((c) => (
-              <span
-                key={c._id || c}
-                className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-sm"
-                style={{
-                  backgroundColor: c.color || "#eef2ff",
-                  color: c.color ? "#ffffff" : "#4f46e5",
-                }}
+        {/* Categories Section */}
+        {isEditingCategories ? (
+          <div className="mt-2 mb-2">
+            <Select
+              isMulti
+              options={categories.map((cat) => ({
+                value: cat._id,
+                label: cat.name,
+                color: cat.color,
+              }))}
+              value={selectedCategories}
+              onChange={setSelectedCategories}
+              placeholder="Select categories..."
+              className="text-sm"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  minHeight: "36px",
+                  borderColor: "#3b82f6",
+                }),
+              }}
+            />
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={handleSaveCategories}
+                disabled={isLoading}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-all hover:bg-blue-600 disabled:opacity-60"
               >
-                {c.name || c}
-              </span>
-            ))}
+                <Check size={14} />
+                Save
+              </button>
+              <button
+                onClick={handleCancelEditCategories}
+                disabled={isLoading}
+                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-all hover:bg-gray-200 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 mb-2">
+            {article.categories && article.categories.length > 0 ? (
+              <div className="flex gap-2 flex-wrap">
+                {article.categories.map((c) => (
+                  <span
+                    key={c._id || c}
+                    className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-sm"
+                    style={{
+                      backgroundColor: c.color || "#eef2ff",
+                      color: c.color ? "#ffffff" : "#4f46e5",
+                    }}
+                  >
+                    {c.name || c}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-400 italic">No categories</div>
+            )}
+            <button
+              onClick={handleEditCategories}
+              disabled={
+                isLoading ||
+                article.status === "pending" ||
+                article.status === "failed"
+              }
+              className="flex items-center gap-1 mt-2 text-xs text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              title="Edit categories"
+            >
+              <Tag size={14} />
+              Edit Categories
+            </button>
           </div>
         )}
 
