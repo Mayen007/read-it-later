@@ -62,7 +62,7 @@ export default function Register({ onSwitchToLogin }) {
               Create your account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Start building your read-it-later library
+              Start saving articles to read later
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -125,8 +125,8 @@ export default function Register({ onSwitchToLogin }) {
                     !password
                       ? "text-gray-400"
                       : passwordChecks.length
-                      ? "text-green-600"
-                      : "text-red-500"
+                        ? "text-green-600"
+                        : "text-red-500"
                   }`}
                 >
                   <span>
@@ -139,8 +139,8 @@ export default function Register({ onSwitchToLogin }) {
                     !password
                       ? "text-gray-400"
                       : passwordChecks.uppercase
-                      ? "text-green-600"
-                      : "text-red-500"
+                        ? "text-green-600"
+                        : "text-red-500"
                   }`}
                 >
                   <span>
@@ -153,8 +153,8 @@ export default function Register({ onSwitchToLogin }) {
                     !password
                       ? "text-gray-400"
                       : passwordChecks.number
-                      ? "text-green-600"
-                      : "text-red-500"
+                        ? "text-green-600"
+                        : "text-red-500"
                   }`}
                 >
                   <span>
@@ -167,8 +167,8 @@ export default function Register({ onSwitchToLogin }) {
                     !password
                       ? "text-gray-400"
                       : passwordChecks.special
-                      ? "text-green-600"
-                      : "text-red-500"
+                        ? "text-green-600"
+                        : "text-red-500"
                   }`}
                 >
                   <span>

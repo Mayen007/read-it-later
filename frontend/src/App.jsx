@@ -8,18 +8,27 @@ import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
 
 // Lazy load auth components - only loaded when needed
+const Landing = lazy(() => import("./components/Landing"));
 const Login = lazy(() => import("./components/Login"));
 const Register = lazy(() => import("./components/Register"));
 
 function AppContent() {
   const { isAuthenticated, loading: authLoading, logout, user } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
+  const [showLanding, setShowLanding] = useState(
+    !localStorage.getItem("hasVisited"),
+  );
   const [articles, setArticles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [pollingIntervals, setPollingIntervals] = useState({}); // To store interval IDs for polling
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+
+  const handleGetStarted = () => {
+    localStorage.setItem("hasVisited", "true");
+    setShowLanding(false);
+  };
 
   // Load articles and categories on component mount
   useEffect(() => {
@@ -243,7 +252,9 @@ function AppContent() {
           </div>
         }
       >
-        {showRegister ? (
+        {showLanding ? (
+          <Landing onGetStarted={handleGetStarted} />
+        ) : showRegister ? (
           <Register onSwitchToLogin={() => setShowRegister(false)} />
         ) : (
           <Login onSwitchToRegister={() => setShowRegister(true)} />
@@ -309,7 +320,7 @@ function AppContent() {
               </button>
             </div>
           </div>
-          <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">
+          <p className="text-gray-600 text-sm sm:text-base">
             Save and organize articles to read later
           </p>
         </header>
