@@ -62,8 +62,11 @@ const AddArticleForm = ({ onAddArticle }) => {
         }));
         setOptions(opts);
       })
-      .catch(() => {
-        // ignore
+      .catch((err) => {
+        if (import.meta.env.DEV) {
+          console.error("Failed to load categories:", err);
+        }
+        // Silently fail - categories are optional
       });
     return () => {
       mounted = false;

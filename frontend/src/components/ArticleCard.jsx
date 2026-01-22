@@ -10,7 +10,6 @@ import {
   Tag,
 } from "lucide-react";
 import { formatDistance, parseISO } from "date-fns";
-import { optimizeImageUrl, generateSrcSet } from "../utils/imageOptimization";
 
 // Lazy load ConfirmDialog - only loaded when user tries to delete
 const ConfirmDialog = lazy(() => import("./ConfirmDialog"));
@@ -344,7 +343,7 @@ const ArticleCard = ({
                 article.status === "pending" ||
                 article.status === "failed"
               }
-              className="flex items-center gap-1 mt-2 text-xs text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 mt-3 text-xs text-blue-600 hover:text-blue-700 cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               title="Edit categories"
             >
               <Tag size={14} />

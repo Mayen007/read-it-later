@@ -103,12 +103,30 @@ const ArticlesList = ({
               </h3>
               <p>Start by adding your first article using the form above!</p>
             </>
+          ) : selectedCategory ? (
+            <>
+              <h3 className="text-xl mb-2 text-gray-900">
+                No articles in this category
+              </h3>
+              <p>
+                Try selecting a different category or clear the category filter
+                to see all articles.
+              </p>
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+              >
+                Clear Category Filter
+              </button>
+            </>
           ) : (
             <>
               <h3 className="text-xl mb-2 text-gray-900">
-                No articles match your search
+                No articles match your filters
               </h3>
-              <p>Try adjusting your search terms or filters.</p>
+              <p>
+                Try adjusting your search terms or filters to see more results.
+              </p>
             </>
           )}
         </div>

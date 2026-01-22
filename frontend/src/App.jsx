@@ -179,22 +179,43 @@ function AppContent() {
 
   // Category handlers
   const handleCreateCategory = async (name, color) => {
-    const response = await articlesAPI.createCategory(name, color);
-    setCategories((prev) => [...prev, response.data]);
+    try {
+      const response = await articlesAPI.createCategory(name, color);
+      setCategories((prev) => [...prev, response.data]);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error creating category:", error);
+      }
+      throw error; // Re-throw so CategoryManager can handle it
+    }
   };
 
   const handleUpdateCategory = async (id, data) => {
-    const response = await articlesAPI.updateCategory(id, data);
-    setCategories((prev) =>
-      prev.map((cat) => (cat._id === id ? response.data : cat)),
-    );
+    try {
+      const response = await articlesAPI.updateCategory(id, data);
+      setCategories((prev) =>
+        prev.map((cat) => (cat._id === id ? response.data : cat)),
+      );
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error updating category:", error);
+      }
+      throw error; // Re-throw so CategoryManager can handle it
+    }
   };
 
   const handleDeleteCategory = async (id) => {
-    await articlesAPI.deleteCategory(id);
-    setCategories((prev) => prev.filter((cat) => cat._id !== id));
-    // Reload articles to update category references
-    loadArticles();
+    try {
+      await articlesAPI.deleteCategory(id);
+      setCategories((prev) => prev.filter((cat) => cat._id !== id));
+      // Reload articles to update category references
+      await loadArticles();
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error deleting category:", error);
+      }
+      throw error; // Re-throw so CategoryManager can handle it
+    }
   };
 
   // Show loading screen while checking auth

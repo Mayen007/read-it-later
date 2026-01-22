@@ -89,11 +89,21 @@ const ArticleFilters = ({
       {/* Category Filter */}
       {categories.length > 0 && (
         <div className="border-t border-gray-200 pt-3 sm:pt-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Tag size={16} className="text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">
-              Filter by Category
-            </span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <Tag size={16} className="text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">
+                Filter by Category
+              </span>
+            </div>
+            {selectedCategory && (
+              <button
+                onClick={() => onCategoryChange(null)}
+                className="text-xs text-blue-600 hover:text-blue-700 underline"
+              >
+                Clear filter
+              </button>
+            )}
           </div>
           <div className="flex gap-2 flex-wrap">
             <button
