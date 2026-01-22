@@ -13,11 +13,19 @@ const ArticlesList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const articleRefs = useRef({});
 
   const filteredArticles = useMemo(() => {
     let filtered = articles;
+
+    // Apply category filter
+    if (selectedCategory) {
+      filtered = filtered.filter((article) =>
+        article.categories?.some((cat) => cat._id === selectedCategory),
+      );
+    }
 
     // Apply read/unread filter
     if (filter === "read") {
@@ -42,7 +50,7 @@ const ArticlesList = ({
     return filtered.sort(
       (a, b) => new Date(b.saved_date) - new Date(a.saved_date),
     );
-  }, [articles, searchTerm, filter]);
+  }, [articles, searchTerm, filter, selectedCategory]);
 
   // Scroll to first match when searchTerm changes
   useEffect(() => {
@@ -80,6 +88,9 @@ const ArticlesList = ({
         totalCount={counts.total}
         readCount={counts.read}
         unreadCount={counts.unread}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
       />
 
       {filteredArticles.length === 0 ? (
