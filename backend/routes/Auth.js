@@ -85,6 +85,10 @@ router.post('/register', authLimiter, async (req, res) => {
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(newUser._id);
 
+    // Store refresh token in database
+    newUser.refreshTokens.push(refreshToken);
+    await newUser.save();
+
     res.status(201).json({
       message: 'User registered successfully',
       accessToken,
@@ -125,6 +129,10 @@ router.post('/login', authLimiter, async (req, res) => {
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user._id);
 
+    // Store refresh token in database
+    user.refreshTokens.push(refreshToken);
+    await user.save();
+
     res.json({
       message: 'Login successful',
       accessToken,
@@ -150,9 +158,15 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Verify refresh token
-    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, decoded) => {
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, decoded) => {
       if (err) {
         return res.status(403).json({ error: 'Invalid or expired refresh token' });
+      }
+
+      // Check if token exists in database
+      const user = await User.findById(decoded.userId);
+      if (!user || !user.refreshTokens.includes(refreshToken)) {
+        return res.status(403).json({ error: 'Refresh token revoked or invalid' });
       }
 
       // Generate new access token
@@ -166,6 +180,37 @@ router.post('/refresh', async (req, res) => {
   } catch (error) {
     console.error('Token refresh error:', error);
     res.status(500).json({ error: 'Server error during token refresh' });
+  }
+});
+
+// POST /api/auth/logout - Logout and invalidate refresh token
+router.post('/logout', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ error: 'Refresh token is required' });
+    }
+
+    // Verify and decode token to get user ID
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, decoded) => {
+      if (err) {
+        // Even if token is expired/invalid, try to remove it
+        return res.json({ message: 'Logged out successfully' });
+      }
+
+      // Remove refresh token from database
+      const user = await User.findById(decoded.userId);
+      if (user) {
+        user.refreshTokens = user.refreshTokens.filter(token => token !== refreshToken);
+        await user.save();
+      }
+
+      res.json({ message: 'Logged out successfully' });
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ error: 'Server error during logout' });
   }
 });
 

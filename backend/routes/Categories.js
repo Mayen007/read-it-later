@@ -20,8 +20,7 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { name, color = '' } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
-    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    let category = new Category({ name, slug, color, user_id: req.user.id });
+    let category = new Category({ name, color, user_id: req.user.id });
     try {
       category = await category.save();
     } catch (e) {
@@ -40,10 +39,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { name, color } = req.body;
     const update = {};
-    if (name) {
-      update.name = name;
-      update.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    }
+    if (name) update.name = name;
     if (color !== undefined) update.color = color;
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id, user_id: req.user.id },

@@ -15,7 +15,6 @@ const articleSchema = new mongoose.Schema({
   error_message: { type: String, default: '' }, // New field
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true }, // User reference for multi-user support
   created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
 });
 
 // Compound unique index: same URL can exist for different users

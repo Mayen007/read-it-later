@@ -39,7 +39,7 @@ const ArticleCard = ({
   // Force immediate update when article changes (new article added)
   useEffect(() => {
     setCurrentTime(new Date());
-  }, [article.saved_date, article.id]); // Trigger when saved_date or id changes
+  }, [article.created_at, article.saved_date, article.id]); // Trigger when created_at/saved_date or id changes
 
   // Initialize selected categories from article
   useEffect(() => {
@@ -266,12 +266,12 @@ const ArticleCard = ({
                 {formatDate(article.published_date)}
               </span>
             )}
-          {article.saved_date &&
+          {(article.created_at || article.saved_date) &&
             article.status !== "pending" &&
             article.status !== "failed" && (
               <span className="flex items-center gap-1.5">
                 <Clock size={12} className="shrink-0" />
-                Saved {formatDate(article.saved_date)}
+                Saved {formatDate(article.created_at || article.saved_date)}
               </span>
             )}
         </div>

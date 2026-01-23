@@ -99,7 +99,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
     // Optimize query with lean() and select only needed fields
     const articles = await Article.find(query)
-      .populate('categories', 'name slug color')
+      .populate('categories', 'name color')
       .select('-__v') // Exclude version key
       .sort({ created_at: -1 })
       .lean() // Return plain JavaScript objects for faster serialization
@@ -130,8 +130,7 @@ const resolveCategories = async (categoriesInput = [], userId) => {
     if (!name) continue;
     let cat = await Category.findOne({ name, user_id: userId });
     if (!cat) {
-      const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      cat = new Category({ name, slug, user_id: userId });
+      cat = new Category({ name, user_id: userId });
       try {
         await cat.save();
       } catch (e) {
@@ -180,8 +179,7 @@ router.post('/', authenticateToken, async (req, res) => {
         // 4. Update the article with extracted metadata and 'completed' status
         await Article.findByIdAndUpdate(article._id, {
           ...metadata,
-          status: 'completed',
-          updated_at: new Date()
+          status: 'completed'
         }, { new: true });
         console.log(`Metadata extracted and updated for article: ${article._id}`);
       })
@@ -190,8 +188,7 @@ router.post('/', authenticateToken, async (req, res) => {
         console.error(`Error during background metadata extraction for ${url}:`, error);
         await Article.findByIdAndUpdate(article._id, {
           status: 'failed',
-          error_message: error.message,
-          updated_at: new Date()
+          error_message: error.message
         }, { new: true });
       });
 
@@ -205,7 +202,7 @@ router.post('/', authenticateToken, async (req, res) => {
 router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const article = await Article.findOne({ _id: req.params.id, user_id: req.user.id })
-      .populate('categories', 'name slug color')
+      .populate('categories', 'name color')
       .select('-__v')
       .lean()
       .exec();
@@ -228,13 +225,12 @@ router.put('/:id', authenticateToken, async (req, res) => {
     if (is_read !== undefined) updateData.is_read = is_read;
     if (tags) updateData.tags = tags;
     if (categories) updateData.categories = await resolveCategories(categories, req.user.id);
-    updateData.updated_at = new Date();
 
     const article = await Article.findOneAndUpdate(
       { _id: req.params.id, user_id: req.user.id },
       updateData,
       { new: true, lean: true }
-    ).populate('categories', 'name slug color');
+    ).populate('categories', 'name color');
     if (!article) return res.status(404).json({ error: 'Article not found' });
     res.json(article);
   } catch (error) {
@@ -250,7 +246,7 @@ router.put('/bulk-categories', authenticateToken, async (req, res) => {
     await Promise.all(assignments.map(a =>
       Article.findOneAndUpdate(
         { _id: a.id, user_id: req.user.id },
-        { categories: a.categories, updated_at: new Date() }
+        { categories: a.categories }
       )
     ));
     res.json({ message: 'Bulk category assignment completed' });
