@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-01-23
+
+### Added
+
+- **Landing Page**
+  - Premium landing page with gradient background for first-time visitors
+  - Hero section highlighting simple, visual, and free positioning
+  - Feature grid showcasing save from anywhere, visual organization, instant search, and progress tracking
+  - "How It Works" section with 3-step process and visual step indicators
+  - CTA section emphasizing no paywalls, ads, or complexity
+  - localStorage-based visitor tracking (returning visitors skip to login)
+
+- **Enhanced Authentication UI**
+  - Two-column layout for Login and Register pages
+  - Left column: Form with BookOpen icon branding
+  - Right column: Gradient background with value proposition and feature highlights
+  - Login: "Welcome Back" messaging with Chrome extension and visual organization highlights
+  - Register: "Start Organizing Today" with free and quick setup benefits
+  - Responsive design (single column on mobile, two columns on desktop)
+
+- **Messaging Consistency**
+  - Updated all components to use "saved articles" instead of "reading list" or "library"
+  - Aligned Login subtitle: "Access your saved articles"
+  - Aligned Register subtitle: "Start saving articles to read later"
+  - Updated Chrome extension description to emphasize color-coded categories
+  - Chrome extension version bumped to 2.1.0
+
+### Changed
+
+- Landing page now shows first for new visitors, then Login/Register
+- Login and Register pages redesigned with split-screen premium layout
+- Consistent "save articles for later" messaging across all touchpoints
+- Extension manifest description updated to highlight visual organization
+
+### Technical
+
+- Added Lucide React icons: Lock, Zap for benefit highlights
+- Implemented lazy loading for Landing component
+- LocalStorage integration for first-visit detection
+
 ## [2.1.0] - 2026-01-22
 
 ### Added
@@ -140,6 +180,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modern UI with Tailwind CSS v4
 - Backend API with Express 5 and Mongoose 8
 
+[2.2.0]: https://github.com/Mayen007/read-it-later/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Mayen007/read-it-later/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Mayen007/read-it-later/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/Mayen007/read-it-later/compare/v1.0.0...v1.5.0
