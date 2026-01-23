@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Read It Later",
   "version": "2.1.0",
-  "description": "Save articles with one click and organize them with color-coded categories. A simple, visual way to manage what you want to read. Completely free with automatic metadata extraction and instant sync.",
+  "description": "Save articles with one click and organize them with color-coded categories. A simple, visual way to manage what you want to read. Completely free with automatic metadata extraction and instant sync. Works with Chrome, Brave, Edge, Opera, and Vivaldi.",
   "permissions": [
     "activeTab",
     "scripting",

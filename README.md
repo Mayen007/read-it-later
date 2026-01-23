@@ -1,6 +1,6 @@
 # Read It Later
 
-A full-stack web application to save and organize articles for later reading, built with a MERN backend (MongoDB, Express, React, Node.js) and a Chrome extension.
+A simple, visual way to save and organize articles you want to read. Built with MERN stack (MongoDB, Express, React, Node.js) and works in any modern browser. Browser extension works with Chrome, Brave, Edge, Opera, and Vivaldi.
 
 ## Features
 
@@ -11,7 +11,9 @@ A full-stack web application to save and organize articles for later reading, bu
 - 🔍 **Search & Filter**: Search through saved articles and filter by read/unread status or category
 - ✅ **Mark as Read**: Track your reading progress with read/unread status
 - 🗑️ **Delete Articles**: Remove articles you no longer need
-- 🌐 **Chrome Extension**: Save current page directly from your browser with authenticated requests
+- 🌐 **Browser Extension**: Save current page directly from your browser (Chrome, Brave, Edge, Opera, Vivaldi)
+- 🎨 **Visual Organization**: Color-coded categories and intuitive UI for easy article management
+- 🖼️ **Premium UI**: Beautiful landing page and authentication screens with app-themed decorative elements
 - 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
 - 🔄 **Token Refresh**: Automatic access token refresh for seamless user experience
 - ⚡ **Performance Optimized**: Cold start handling, retry logic, connection pooling, and compression
@@ -44,7 +46,8 @@ read-it-later/
 
 - Node.js 18+
 - MongoDB Atlas account (or local MongoDB)
-- Chrome browser (for extension)
+- Any modern browser (Chrome, Firefox, Safari, Edge, Brave, etc.)
+- Chrome, Brave, Edge, Opera, or Vivaldi (for browser extension)
 
 ### Backend Setup (Express + MongoDB)
 

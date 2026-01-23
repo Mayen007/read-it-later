@@ -1,5 +1,66 @@
 # Release Process & Roadmap
 
+## v2.3.0 - Visual Enhancement & Browser-Agnostic Positioning
+
+### New Features
+
+- **Premium Visual Authentication**
+  - Full-screen login and register images on desktop
+  - App-themed decorative elements (folders, article cards, bookmarks, browser tabs, category dots)
+  - Subtle gradient backgrounds with reduced opacity decorations
+  - Fixed viewport height for elegant no-scroll experience
+
+- **Browser-Agnostic Messaging**
+  - Updated Landing page to emphasize universal browser compatibility
+  - Changed "Save from Anywhere" to "Works Everywhere" with Globe icon
+  - Clear communication: Web app works everywhere, extension is Chrome-only (for now)
+  - Added "more browsers coming soon" messaging for extension
+  - Transparent about current Chrome-only extension while welcoming all browser users
+
+### Visual Improvements
+
+- Login/Register images fill entire right half (object-cover)
+- Decorative elements use category brand colors (blue, green, purple, orange, teal, pink)
+- 30% opacity on decorative shapes for better mobile readability
+- App-themed doodles: folders, article cards, bookmarks, browser tabs, category clusters
+- Responsive breakpoints maintained (single column mobile, split screen desktop)
+
+### UX Enhancements
+
+- Form container scrolls independently on mobile when needed
+- Images remain fixed while form scrolls
+- Decorative elements don't interfere with form interaction (pointer-events-none)
+- Visual hierarchy: form content (z-10) above decorative background shapes
+
+### Technical
+
+- Added login-img.png and register-img.png to frontend/public/
+- SVG decorative elements with proper viewBox and path definitions
+- Lucide Globe icon for browser-agnostic messaging
+- Cleaned up unused icon imports
+
+### Breaking Changes
+
+None - visual enhancements only
+
+## v2.2.0 - Landing Page & Auth UI Enhancement
+
+### New Features
+
+- **Landing Page**
+  - Premium landing page for first-time visitors with localStorage tracking
+  - Feature grid and "How It Works" section
+  - Clear value proposition and CTA sections
+
+- **Enhanced Authentication UI**
+  - Two-column layout for Login and Register
+  - Gradient backgrounds with messaging
+  - Responsive design
+
+### Breaking Changes
+
+None - fully backward compatible
+
 ## v2.1.0 - Category Management UI Release
 
 ### New Features

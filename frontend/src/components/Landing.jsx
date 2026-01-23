@@ -40,8 +40,8 @@ export default function Landing({ onGetStarted }) {
               Works Everywhere
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              Access from any browser. Browser extension available for Chrome,
-              with more browsers coming soon.
+              Access from any browser. Extension available for Chrome, Brave,
+              Edge, Opera, and more.
             </p>
           </div>
 
@@ -121,8 +121,8 @@ export default function Landing({ onGetStarted }) {
                 Save Articles
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Paste any article URL in the web app, or use our browser
-                extension (Chrome) to save with one click.
+                Paste any article URL in the web app, or use our extension
+                (works in Chrome, Brave, Edge, and more) to save with one click.
               </p>
             </div>
             {/* Connector line - hidden on mobile */}
@@ -155,8 +155,8 @@ export default function Landing({ onGetStarted }) {
           want to read.
         </p>
         <p className="text-sm text-gray-500 mb-8">
-          Web app works in any modern browser. Extension currently available for
-          Chrome.
+          Web app works in any modern browser. Extension works with Chrome,
+          Brave, Edge, Opera, and Vivaldi.
         </p>
         <button
           onClick={onGetStarted}

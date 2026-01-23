@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-01-23
+
+### Added
+
+- **Visual Authentication Pages**
+  - Premium login and register images filling entire right half of screen
+  - App-themed decorative elements on form backgrounds:
+    - Colored folder shapes matching category palette (blue, green, purple, orange)
+    - Floating article card outlines with headers and text lines
+    - Bookmark ribbon SVG shapes
+    - Browser tab icons representing extension capability
+    - Category dot clusters in brand colors
+  - Subtle gradient backgrounds on form side (white → blue-50 → indigo-50)
+  - Fixed viewport height (h-screen) for no-scroll experience on desktop
+  - Reduced decorative element opacity (30%) for better form visibility on mobile
+
+### Changed
+
+- **Browser-Agnostic Positioning**
+  - Updated Landing page feature from "Save from Anywhere" to "Works Everywhere"
+  - Changed Chrome icon to Globe icon for universal browser appeal
+  - Added clarification: "Access from any browser. Browser extension available for Chrome, with more browsers coming soon."
+  - Updated Step 2 messaging: "Paste any article URL in the web app, or use our browser extension (Chrome) to save with one click."
+  - Added disclaimer in CTA: "Web app works in any modern browser. Extension currently available for Chrome."
+  - Maintained transparency about Chrome-only extension while emphasizing universal web app access
+
+- **UX Improvements**
+  - Login and Register images now fill entire right side with object-cover
+  - Form container has overflow-y-auto for mobile scrolling when needed
+  - Decorative shapes positioned as background elements (z-index hierarchy)
+  - Removed unused Chrome and FolderOpen icon imports from Login component
+
+### Technical
+
+- Added login-img.png and register-img.png to frontend/public/
+- Lucide React Globe icon added for browser-agnostic messaging
+- SVG path definitions for folders and bookmark ribbons
+- Responsive breakpoints maintained (single column mobile, split desktop)
+
 ## [2.2.0] - 2026-01-23
 
 ### Added
