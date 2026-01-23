@@ -1,10 +1,4 @@
-import {
-  BookOpen,
-  Chrome,
-  Search,
-  FolderOpen,
-  CheckCircle,
-} from "lucide-react";
+import { BookOpen, Globe, Search, FolderOpen, CheckCircle } from "lucide-react";
 
 export default function Landing({ onGetStarted }) {
   return (
@@ -27,7 +21,7 @@ export default function Landing({ onGetStarted }) {
           </p>
           <button
             onClick={onGetStarted}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl cursor-pointer transform hover:-translate-y-0.5"
           >
             Get Started
           </button>
@@ -40,14 +34,14 @@ export default function Landing({ onGetStarted }) {
           {/* Feature 1 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-              <Chrome className="text-blue-600" size={24} />
+              <Globe className="text-blue-600" size={24} />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Save from Anywhere
+              Works Everywhere
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              Use our Chrome extension to save articles with a single click
-              while browsing.
+              Access from any browser. Browser extension available for Chrome,
+              with more browsers coming soon.
             </p>
           </div>
 
@@ -127,8 +121,8 @@ export default function Landing({ onGetStarted }) {
                 Save Articles
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Paste any article URL or use our Chrome extension to save
-                directly from your browser.
+                Paste any article URL in the web app, or use our browser
+                extension (Chrome) to save with one click.
               </p>
             </div>
             {/* Connector line - hidden on mobile */}
@@ -156,13 +150,17 @@ export default function Landing({ onGetStarted }) {
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
           Simple Organization. Powerful Features. Completely Free.
         </h2>
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-gray-600 mb-4">
           No paywalls, no ads, no complexity. Just a better way to save what you
           want to read.
         </p>
+        <p className="text-sm text-gray-500 mb-8">
+          Web app works in any modern browser. Extension currently available for
+          Chrome.
+        </p>
         <button
           onClick={onGetStarted}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl transform cursor-pointer hover:-translate-y-0.5"
         >
           Get Started Free
         </button>

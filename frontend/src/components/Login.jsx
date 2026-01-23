@@ -24,10 +24,83 @@ export default function Login({ onSwitchToRegister }) {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
       {/* Left side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 bg-white">
-        <div className="max-w-md w-full space-y-8">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 bg-linear-to-br from-white via-blue-50/30 to-indigo-50/20 overflow-y-auto relative">
+        {/* Decorative shapes/doodles - App themed */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+          {/* Folder shape - blue (top left) */}
+          <svg className="absolute top-10 left-8 w-20 h-16" viewBox="0 0 80 64">
+            <path
+              d="M0 8 L0 56 Q0 60 4 60 L76 60 Q80 60 80 56 L80 16 Q80 12 76 12 L32 12 L28 8 Q26 4 22 4 L4 4 Q0 4 0 8 Z"
+              fill="none"
+              stroke="#93c5fd"
+              strokeWidth="2"
+            />
+          </svg>
+
+          {/* Article card outline (top right) */}
+          <div className="absolute top-20 right-20 w-24 h-32 border-2 border-indigo-200 rounded-lg">
+            <div className="w-full h-8 bg-indigo-100 rounded-t-lg"></div>
+            <div className="p-2 space-y-1">
+              <div className="w-full h-2 bg-indigo-100 rounded"></div>
+              <div className="w-3/4 h-2 bg-indigo-100 rounded"></div>
+            </div>
+          </div>
+
+          {/* Bookmark ribbon (middle left) */}
+          <svg
+            className="absolute top-1/3 left-12 w-8 h-12"
+            viewBox="0 0 32 48"
+          >
+            <path
+              d="M4 0 L28 0 L28 48 L16 40 L4 48 Z"
+              fill="#a78bfa"
+              opacity="0.6"
+            />
+          </svg>
+
+          {/* Category dot cluster (bottom right) */}
+          <div className="absolute bottom-24 right-16">
+            <div className="w-3 h-3 bg-blue-500 rounded-full absolute top-0 left-0"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full absolute top-0 left-5"></div>
+            <div className="w-3 h-3 bg-purple-500 rounded-full absolute top-0 left-10"></div>
+            <div className="w-3 h-3 bg-orange-500 rounded-full absolute top-5 left-2.5"></div>
+            <div className="w-3 h-3 bg-pink-500 rounded-full absolute top-5 left-7.5"></div>
+          </div>
+
+          {/* Browser tab shape (top middle) */}
+          <svg
+            className="absolute top-8 left-1/2 w-24 h-10"
+            viewBox="0 0 96 40"
+          >
+            <path
+              d="M4 40 L4 8 Q4 4 8 4 L88 4 Q92 4 92 8 L92 40"
+              fill="none"
+              stroke="#e0e7ff"
+              strokeWidth="2"
+            />
+            <circle cx="12" cy="20" r="3" fill="#c7d2fe" />
+          </svg>
+
+          {/* Folder shape - green (bottom left) */}
+          <svg
+            className="absolute bottom-16 left-16 w-16 h-12"
+            viewBox="0 0 64 48"
+          >
+            <path
+              d="M0 6 L0 44 Q0 48 4 48 L60 48 Q64 48 64 44 L64 12 Q64 8 60 8 L26 8 L22 6 Q20 4 18 4 L4 4 Q0 4 0 6 Z"
+              fill="none"
+              stroke="#86efac"
+              strokeWidth="2"
+            />
+          </svg>
+
+          {/* Small article card (middle right) */}
+          <div className="absolute top-1/2 right-8 w-16 h-20 border-2 border-purple-200 rounded-lg bg-white/50"></div>
+        </div>
+
+        <div className="max-w-md w-full space-y-8 relative z-10">
           <div>
             <div className="flex items-center justify-center mb-6">
               <BookOpen size={48} className="text-blue-500" />
@@ -105,43 +178,12 @@ export default function Login({ onSwitchToRegister }) {
       </div>
 
       {/* Right side - Visual */}
-      <div className="hidden lg:flex flex-1 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 items-center justify-center p-12">
-        <div className="max-w-md text-center space-y-8">
-          <h2 className="text-4xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="text-xl text-gray-600 leading-relaxed">
-            Your saved articles are waiting for you.
-          </p>
-
-          <div className="space-y-6 pt-8">
-            <div className="flex items-start gap-4 text-left">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                <Chrome className="text-blue-600" size={24} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Save from Anywhere
-                </h3>
-                <p className="text-sm text-gray-600">
-                  One click to save articles while browsing
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 text-left">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                <FolderOpen className="text-indigo-600" size={24} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Visual Organization
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Color-coded categories for easy sorting
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="hidden lg:flex flex-1 relative overflow-hidden">
+        <img
+          src="/login-img.png"
+          alt="Welcome back to your organized reading collection"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );
