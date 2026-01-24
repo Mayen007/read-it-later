@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import ArticleCard from "./ArticleCard";
+import ArticleCardSkeleton from "./ArticleCardSkeleton";
 import ArticleFilters from "./ArticleFilters";
 import { BookOpen } from "lucide-react";
 
@@ -71,9 +72,11 @@ const ArticlesList = ({
 
   if (isLoading) {
     return (
-      <div className="text-center py-12 text-gray-600">
-        <div className="w-10 h-10 border-3 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-        <p>Loading articles...</p>
+      <div className="space-y-4">
+        {/* Show 3 skeleton cards while loading */}
+        <ArticleCardSkeleton />
+        <ArticleCardSkeleton />
+        <ArticleCardSkeleton />
       </div>
     );
   }

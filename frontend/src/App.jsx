@@ -3,6 +3,7 @@ import { BookOpen, LogOut, User, Tag, X } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
 import CategoryManager from "./components/CategoryManager";
+import LoadingSkeleton from "./components/LoadingSkeleton";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
@@ -229,29 +230,13 @@ function AppContent() {
 
   // Show loading screen while checking auth
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSkeleton />;
   }
 
   // Show login/register screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <Suspense
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading...</p>
-            </div>
-          </div>
-        }
-      >
+      <Suspense fallback={<LoadingSkeleton />}>
         {showLanding ? (
           <Landing onGetStarted={handleGetStarted} />
         ) : showRegister ? (
