@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { BookOpen, LogOut, User, Tag, X } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
@@ -25,11 +25,78 @@ function AppContent() {
   const [error, setError] = useState("");
   const [pollingIntervals, setPollingIntervals] = useState({}); // To store interval IDs for polling
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    limit: 12,
+  });
 
   const handleGetStarted = () => {
     localStorage.setItem("hasVisited", "true");
     setShowLanding(false);
   };
+
+  const loadArticles = useCallback(
+    async (page = pagination.currentPage) => {
+      try {
+        setIsLoading(true);
+        setError("");
+        const response = await articlesAPI.getAll({
+          page,
+          limit: pagination.limit,
+        });
+
+        // Handle both old format (array) and new format (object with articles and pagination)
+        if (Array.isArray(response.data)) {
+          // Old format - backward compatibility
+          setArticles(response.data);
+        } else {
+          // New format with pagination
+          setArticles(response.data.articles);
+          setPagination(response.data.pagination);
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error("Error loading articles:", error);
+        }
+        const isDev = import.meta.env.DEV;
+        if (isDev) {
+          setError(
+            "Failed to load articles. Make sure the backend server is running on port 5000.",
+          );
+        } else {
+          // More informative error message about cold starts
+          const isTimeout =
+            error.code === "ECONNABORTED" || error.message?.includes("timeout");
+          if (isTimeout) {
+            setError(
+              "The server is waking up from sleep (this can take 30-60 seconds on first load). Please wait a moment and try again.",
+            );
+          } else {
+            setError(
+              "Failed to load articles. The service might be waking up. Please try again in a moment.",
+            );
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [pagination.currentPage, pagination.limit],
+  );
+
+  const loadCategories = useCallback(async () => {
+    try {
+      const response = await articlesAPI.getCategories();
+      setCategories(response.data || []);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error loading categories:", error);
+      }
+      // Silently fail - categories are optional
+    }
+  }, []);
 
   // Load articles and categories on component mount
   useEffect(() => {
@@ -42,53 +109,7 @@ function AppContent() {
     return () => {
       Object.values(pollingIntervals).forEach(clearInterval);
     };
-  }, [pollingIntervals, isAuthenticated]);
-
-  const loadArticles = async () => {
-    try {
-      setIsLoading(true);
-      setError("");
-      const response = await articlesAPI.getAll();
-      setArticles(response.data);
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error("Error loading articles:", error);
-      }
-      const isDev = import.meta.env.DEV;
-      if (isDev) {
-        setError(
-          "Failed to load articles. Make sure the backend server is running on port 5000.",
-        );
-      } else {
-        // More informative error message about cold starts
-        const isTimeout =
-          error.code === "ECONNABORTED" || error.message?.includes("timeout");
-        if (isTimeout) {
-          setError(
-            "The server is waking up from sleep (this can take 30-60 seconds on first load). Please wait a moment and try again.",
-          );
-        } else {
-          setError(
-            "Failed to load articles. The service might be waking up. Please try again in a moment.",
-          );
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadCategories = async () => {
-    try {
-      const response = await articlesAPI.getCategories();
-      setCategories(response.data || []);
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error("Error loading categories:", error);
-      }
-      // Silently fail - categories are optional
-    }
-  };
+  }, [pollingIntervals, isAuthenticated, loadArticles, loadCategories]);
 
   const handleUpdateArticle = async (idOrArticle, data = null) => {
     // If called with an article object (from polling), just update state
@@ -151,7 +172,10 @@ function AppContent() {
   const handleAddArticle = async (url, categories = []) => {
     const response = await articlesAPI.addWithCategories(url, categories);
     const newArticle = response.data.article; // Extract the article from the 'article' property
-    setArticles((prev) => [newArticle, ...prev]);
+
+    // Reset to page 1 and reload articles when adding new article
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    await loadArticles(1);
 
     // Start polling for this specific article's status
     startPolling(newArticle._id);
@@ -226,6 +250,13 @@ function AppContent() {
       }
       throw error; // Re-throw so CategoryManager can handle it
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    setPagination((prev) => ({ ...prev, currentPage: newPage }));
+    loadArticles(newPage);
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Show loading screen while checking auth
@@ -342,6 +373,8 @@ function AppContent() {
             onUpdateArticle={handleUpdateArticle}
             categories={categories}
             isLoading={isLoading}
+            pagination={pagination}
+            onPageChange={handlePageChange}
           />
         </main>
       </div>

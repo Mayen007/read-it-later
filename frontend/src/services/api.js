@@ -127,8 +127,8 @@ export const articlesAPI = {
 
   /**
    * Get all articles
-   * @param {Object} filters - Optional filters (unread_only, search)
-   * @returns {Promise<Array>} Array of articles
+   * @param {Object} filters - Optional filters (unreadOnly, search, page, limit)
+   * @returns {Promise<Object>} Object with articles array and pagination metadata
    */
   getAll: (filters = {}) => {
     const params = new URLSearchParams();
@@ -139,6 +139,14 @@ export const articlesAPI = {
 
     if (filters.search) {
       params.append('search', filters.search);
+    }
+
+    if (filters.page) {
+      params.append('page', filters.page);
+    }
+
+    if (filters.limit) {
+      params.append('limit', filters.limit);
     }
 
     const queryString = params.toString();

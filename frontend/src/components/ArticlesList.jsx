@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import ArticleCard from "./ArticleCard";
 import ArticleCardSkeleton from "./ArticleCardSkeleton";
 import ArticleFilters from "./ArticleFilters";
+import Pagination from "./Pagination";
 import { BookOpen } from "lucide-react";
 
 const ArticlesList = ({
@@ -11,6 +12,8 @@ const ArticlesList = ({
   isLoading,
   categories = [],
   onUpdateArticle,
+  pagination,
+  onPageChange,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
@@ -151,6 +154,16 @@ const ArticlesList = ({
             </div>
           ))}
         </div>
+      )}
+
+      {/* Pagination Controls */}
+      {pagination && onPageChange && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalCount={pagination.totalCount}
+          onPageChange={onPageChange}
+        />
       )}
     </div>
   );

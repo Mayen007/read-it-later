@@ -89,25 +89,51 @@ const extractMetadata = async (url) => {
 };
 
 // GET /api/articles - List all articles
-// Supports optional query params: search, category (category id)
+// Supports optional query params: search, category (category id), page, limit
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const { search, category } = req.query;
+    const { search, category, page = 1, limit = 12 } = req.query;
+
+    // Parse pagination parameters
+    const pageNum = Math.max(1, parseInt(page, 10));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10))); // Max 100 per page
+    const skip = (pageNum - 1) * limitNum;
+
     let query = { user_id: req.user.id }; // Filter by authenticated user
     if (search) query.title = { $regex: search, $options: 'i' };
     if (category) query.categories = category; // filter by category id
+
+    // Get total count for pagination metadata
+    const totalCount = await Article.countDocuments(query);
 
     // Optimize query with lean() and select only needed fields
     const articles = await Article.find(query)
       .populate('categories', 'name color')
       .select('-__v') // Exclude version key
       .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(limitNum)
       .lean() // Return plain JavaScript objects for faster serialization
       .exec();
 
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limitNum);
+    const hasNextPage = pageNum < totalPages;
+    const hasPrevPage = pageNum > 1;
+
     // Set cache headers for browser caching (30 seconds)
     res.set('Cache-Control', 'private, max-age=30');
-    res.json(articles);
+    res.json({
+      articles,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit: limitNum,
+        hasNextPage,
+        hasPrevPage,
+      },
+    });
   } catch (error) {
     console.error("Error fetching articles:", error);
     res.status(500).json({ error: 'Failed to fetch articles' });
