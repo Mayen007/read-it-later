@@ -89,7 +89,11 @@ function AppContent() {
   const loadCategories = useCallback(async () => {
     try {
       const response = await articlesAPI.getCategories();
-      setCategories(response.data || []);
+      // Filter out any null or invalid categories
+      const validCategories = (response.data || []).filter(
+        (cat) => cat && cat._id,
+      );
+      setCategories(validCategories);
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Error loading categories:", error);
@@ -215,7 +219,16 @@ function AppContent() {
   const handleCreateCategory = async (name, color) => {
     try {
       const response = await articlesAPI.createCategory(name, color);
-      setCategories((prev) => [...prev, response.data]);
+      if (import.meta.env.DEV) {
+        console.log("Create category response:", response.data);
+      }
+      // Validate that we received a valid category object
+      if (response.data && response.data._id) {
+        setCategories((prev) => [...prev, response.data]);
+      } else {
+        console.error("Invalid category data:", response.data);
+        throw new Error("Invalid category data received from server");
+      }
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Error creating category:", error);
@@ -227,9 +240,14 @@ function AppContent() {
   const handleUpdateCategory = async (id, data) => {
     try {
       const response = await articlesAPI.updateCategory(id, data);
-      setCategories((prev) =>
-        prev.map((cat) => (cat._id === id ? response.data : cat)),
-      );
+      // Validate that we received a valid category object
+      if (response.data && response.data._id) {
+        setCategories((prev) =>
+          prev.map((cat) => (cat && cat._id === id ? response.data : cat)),
+        );
+      } else {
+        throw new Error("Invalid category data received from server");
+      }
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Error updating category:", error);
@@ -241,7 +259,7 @@ function AppContent() {
   const handleDeleteCategory = async (id) => {
     try {
       await articlesAPI.deleteCategory(id);
-      setCategories((prev) => prev.filter((cat) => cat._id !== id));
+      setCategories((prev) => prev.filter((cat) => cat && cat._id !== id));
       // Reload articles to update category references
       await loadArticles();
     } catch (error) {
@@ -336,7 +354,7 @@ function AppContent() {
               </button>
             </div>
           </div>
-          <p className="text-gray-600 text-sm sm:text-base">
+          <p className="text-left sm:text-center text-gray-600 text-sm sm:text-base">
             Save and organize articles to read later
           </p>
         </header>

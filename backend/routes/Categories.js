@@ -20,16 +20,18 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { name, color = '' } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
-    let category = new Category({ name, color, user_id: req.user.id });
-    try {
-      category = await category.save();
-    } catch (e) {
-      // handle duplicate name race
-      category = await Category.findOne({ name, user_id: req.user.id });
-    }
-    res.status(201).json(category);
+
+    const category = new Category({ name, color, user_id: req.user.id });
+    const savedCategory = await category.save();
+    res.status(201).json(savedCategory);
   } catch (error) {
     console.error('Error creating category:', error);
+
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'A category with this name already exists' });
+    }
+
     res.status(500).json({ error: 'Failed to create category' });
   }
 });

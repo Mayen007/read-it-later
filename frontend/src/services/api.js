@@ -71,6 +71,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Token refresh lock to prevent multiple simultaneous refresh attempts
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach(callback => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
 // Add response interceptor for error handling and token refresh
 api.interceptors.response.use(
   (response) => response,
@@ -86,6 +99,18 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      if (isRefreshing) {
+        // If already refreshing, queue this request
+        return new Promise((resolve) => {
+          addRefreshSubscriber((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
+      isRefreshing = true;
+
       try {
         // Get refresh token from localStorage
         const refreshToken = localStorage.getItem('refreshToken');
@@ -100,11 +125,17 @@ api.interceptors.response.use(
         // Store new access token
         localStorage.setItem('accessToken', newAccessToken);
 
+        // Notify all queued requests
+        isRefreshing = false;
+        onRefreshed(newAccessToken);
+
         // Retry the original request with new token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
         // If refresh fails, clear tokens and redirect to login
+        isRefreshing = false;
+        refreshSubscribers = [];
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');

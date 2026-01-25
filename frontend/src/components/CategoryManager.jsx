@@ -53,7 +53,7 @@ const CategoryManager = ({
     if (
       categories.some(
         (cat) =>
-          cat.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
+          cat && cat.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
       )
     ) {
       setError("A category with this name already exists");
@@ -101,7 +101,7 @@ const CategoryManager = ({
     if (
       categories.some(
         (cat) =>
-          cat._id !== id &&
+          cat && cat._id !== id &&
           cat.name.toLowerCase() === editName.trim().toLowerCase(),
       )
     ) {
@@ -156,12 +156,12 @@ const CategoryManager = ({
     setDeletingId(null);
   };
 
-  const deletingCategory = categories.find((cat) => cat._id === deletingId);
+  const deletingCategory = categories.find((cat) => cat && cat._id === deletingId);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
           <Tag size={20} />
           Manage Categories
@@ -252,7 +252,7 @@ const CategoryManager = ({
               </p>
             </div>
           ) : (
-            categories.map((category) => (
+            categories.filter(cat => cat).map((category) => (
               <div
                 key={category._id}
                 className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-all"
