@@ -4,6 +4,7 @@ import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
 import CategoryManager from "./components/CategoryManager";
 import LoadingSkeleton from "./components/LoadingSkeleton";
+import Spinner from "./components/Spinner";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { articlesAPI } from "./services/api";
@@ -277,15 +278,25 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Show loading screen while checking auth
+  // Show spinner while checking auth
   if (authLoading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner text="Loading..." />
+      </div>
+    );
   }
 
   // Show login/register screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <Suspense fallback={<LoadingSkeleton />}>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <Spinner text="Loading..." />
+          </div>
+        }
+      >
         {showLanding ? (
           <Landing onGetStarted={handleGetStarted} />
         ) : showRegister ? (

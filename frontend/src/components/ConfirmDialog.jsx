@@ -43,14 +43,14 @@ const ConfirmDialog = ({
         className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 sm:p-6 border-b border-gray-200 flex items-start gap-3 sm:gap-4">
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center gap-3 sm:gap-4">
           <div
             className={`shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${
               type === "danger"
                 ? "bg-red-100 text-red-600"
                 : type === "warning"
-                ? "bg-yellow-100 text-yellow-600"
-                : "bg-blue-100 text-blue-600"
+                  ? "bg-yellow-100 text-yellow-600"
+                  : "bg-blue-100 text-blue-600"
             }`}
           >
             <AlertTriangle size={24} className="sm:w-6 sm:h-6" />
@@ -62,7 +62,7 @@ const ConfirmDialog = ({
             {title}
           </h3>
           <button
-            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
             onClick={onCancel}
             aria-label="Close dialog"
           >
@@ -78,18 +78,18 @@ const ConfirmDialog = ({
 
         <div className="p-4 sm:p-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
           <button
-            className="flex-1 px-4 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-all"
+            className="flex-1 px-4 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
             onClick={onCancel}
           >
             {cancelText}
           </button>
           <button
-            className={`flex-1 px-4 py-2.5 text-white rounded-lg font-medium active:scale-95 transition-all ${
+            className={`flex-1 px-4 py-2.5 text-white rounded-lg font-medium active:scale-95 transition-all cursor-pointer ${
               type === "danger"
                 ? "bg-red-500 hover:bg-red-600"
                 : type === "warning"
-                ? "bg-yellow-500 hover:bg-yellow-600"
-                : "bg-blue-500 hover:bg-blue-600"
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : "bg-blue-500 hover:bg-blue-600"
             }`}
             onClick={onConfirm}
             autoFocus
