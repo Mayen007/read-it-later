@@ -4,19 +4,19 @@ A simple, visual way to save and organize articles you want to read. Built with 
 
 ## Features
 
-- 🔐 **User Authentication**: Secure JWT-based login and registration with multi-user support
-- 📝 **Save Articles**: Add articles by URL with automatic metadata extraction (title, excerpt, thumbnail)
-- 🏷️ **Category Management**: Create, edit, and delete custom categories with color coding
-- 📋 **Article Organization**: Assign multiple categories to articles with inline editing
-- 🔍 **Search & Filter**: Search through saved articles and filter by read/unread status or category
-- ✅ **Mark as Read**: Track your reading progress with read/unread status
-- 🗑️ **Delete Articles**: Remove articles you no longer need
-- 🌐 **Browser Extension**: Save current page directly from your browser (Chrome, Brave, Edge, Opera, Vivaldi)
-- 🎨 **Visual Organization**: Color-coded categories and intuitive UI for easy article management
-- 🖼️ **Premium UI**: Beautiful landing page and authentication screens with app-themed decorative elements
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
-- 🔄 **Token Refresh**: Automatic access token refresh for seamless user experience
-- ⚡ **Performance Optimized**: Cold start handling, retry logic, connection pooling, and compression
+- **User Authentication**: Secure JWT-based login and registration with multi-user support
+- **Save Articles**: Add articles by URL with automatic metadata extraction (title, excerpt, thumbnail)
+- **Category Management**: Create, edit, and delete custom categories with color coding
+- **Article Organization**: Assign multiple categories to articles with inline editing
+- **Search & Filter**: Search through saved articles and filter by read/unread status or category
+- **Mark as Read**: Track your reading progress with read/unread status
+- **Delete Articles**: Remove articles you no longer need
+- **Browser Extension**: Save current page directly from your browser (Chrome, Brave, Edge, Opera, Vivaldi)
+- **Visual Organization**: Color-coded categories and intuitive UI for easy article management
+- **Premium UI**: Beautiful landing page and authentication screens with app-themed decorative elements
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Token Refresh**: Automatic access token refresh for seamless user experience
+- **Performance Optimized**: Cold start handling, retry logic, connection pooling, and compression
 
 ## Project Structure
 
