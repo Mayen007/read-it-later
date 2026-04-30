@@ -8,6 +8,7 @@ import {
   User,
   Calendar,
   Tag,
+  Edit3,
 } from "lucide-react";
 import { formatDistance, parseISO } from "date-fns";
 
@@ -26,6 +27,8 @@ const ArticleCard = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isEditingCategories, setIsEditingCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [selectedNotes, setSelectedNotes] = useState("");
 
   // Update current time every second for real-time timestamp updates
   useEffect(() => {
@@ -54,6 +57,10 @@ const ArticleCard = ({
       setSelectedCategories([]);
     }
   }, [article.categories]);
+
+  useEffect(() => {
+    setSelectedNotes(article.notes || "");
+  }, [article.notes]);
 
   const handleToggleRead = async () => {
     setIsLoading(true);
@@ -119,6 +126,32 @@ const ArticleCard = ({
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Error updating categories:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditNotes = () => {
+    setSelectedNotes(article.notes || "");
+    setIsEditingNotes(true);
+  };
+
+  const handleCancelEditNotes = () => {
+    setSelectedNotes(article.notes || "");
+    setIsEditingNotes(false);
+  };
+
+  const handleSaveNotes = async () => {
+    setIsLoading(true);
+    try {
+      if (onUpdateArticle) {
+        await onUpdateArticle(article._id, { notes: selectedNotes });
+      }
+      setIsEditingNotes(false);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Error updating notes:", error);
       }
     } finally {
       setIsLoading(false);
@@ -275,6 +308,66 @@ const ArticleCard = ({
               </span>
             )}
         </div>
+
+        {/* Notes Section */}
+        {isEditingNotes ? (
+          <div className="mt-2 mb-2">
+            <textarea
+              value={selectedNotes}
+              onChange={(e) => setSelectedNotes(e.target.value)}
+              placeholder="Add your notes, highlights, or reminders here..."
+              rows={4}
+              className="w-full rounded-lg border border-blue-200 p-3 text-sm text-gray-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 resize-y"
+            />
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={handleSaveNotes}
+                disabled={isLoading}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-all hover:bg-blue-600 hover:cursor-pointer disabled:opacity-60"
+              >
+                <Check size={14} />
+                Save
+              </button>
+              <button
+                onClick={handleCancelEditNotes}
+                disabled={isLoading}
+                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-all hover:bg-gray-200 hover:cursor-pointer disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 mb-2 rounded-lg border border-dashed border-gray-200 bg-gray-50/70 p-3">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Notes
+              </span>
+              <button
+                onClick={handleEditNotes}
+                disabled={
+                  isLoading ||
+                  article.status === "pending" ||
+                  article.status === "failed"
+                }
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                title="Edit notes"
+              >
+                <Edit3 size={14} />
+                {article.notes ? "Edit Notes" : "Add Notes"}
+              </button>
+            </div>
+            {article.notes ? (
+              <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                {article.notes}
+              </p>
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                No notes yet. Add context, ideas, or follow-up tasks here.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Categories Section */}
         {isEditingCategories ? (

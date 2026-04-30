@@ -4,6 +4,7 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "moduleResolution": "Node",
+    "ignoreDeprecations": "6.0",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "baseUrl": ".",

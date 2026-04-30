@@ -8,6 +8,7 @@ const articleSchema = new mongoose.Schema({
   author: { type: String, default: '' },
   thumbnail_url: { type: String, default: '/logo.png' },
   tags: { type: [String], default: [] },
+  notes: { type: String, default: '' },
   // Categories: array of ObjectId references to Category collection
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
   is_read: { type: Boolean, default: false },

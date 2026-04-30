@@ -346,11 +346,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // PUT /api/articles/:id - Update article
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { is_read, tags, categories } = req.body;
+    const { is_read, tags, categories, notes } = req.body;
     const updateData = {};
     if (is_read !== undefined) updateData.is_read = is_read;
     if (tags) updateData.tags = tags;
     if (categories) updateData.categories = await resolveCategories(categories, req.user.id);
+    if (notes !== undefined) updateData.notes = String(notes);
 
     const article = await Article.findOneAndUpdate(
       { _id: req.params.id, user_id: req.user.id },
