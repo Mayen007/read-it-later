@@ -3,7 +3,8 @@ import ArticleCard from "./ArticleCard";
 import ArticleCardSkeleton from "./ArticleCardSkeleton";
 import ArticleFilters from "./ArticleFilters";
 import Pagination from "./Pagination";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Download } from "lucide-react";
+import { articlesAPI } from "../services/api";
 
 const ArticlesList = ({
   articles,
@@ -18,8 +19,35 @@ const ArticlesList = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const articleRefs = useRef({});
+
+  const handleExportMarkdown = async () => {
+    if (isExporting) return;
+
+    try {
+      setIsExporting(true);
+
+      const response = await articlesAPI.exportMarkdown();
+      const blob = new Blob([response.data], {
+        type:
+          response.headers?.["content-type"] || "text/markdown;charset=utf-8",
+      });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `read-it-later-export-${new Date()
+        .toISOString()
+        .slice(0, 10)}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const filteredArticles = useMemo(() => {
     let filtered = articles;
@@ -98,6 +126,21 @@ const ArticlesList = ({
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
       />
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-gray-600">
+          Showing {filteredArticles.length} of {articles.length} articles
+        </p>
+        <button
+          onClick={handleExportMarkdown}
+          disabled={isExporting || articles.length === 0}
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Export the full article library to Markdown"
+        >
+          <Download size={16} />
+          {isExporting ? "Exporting..." : "Export Markdown"}
+        </button>
+      </div>
 
       {filteredArticles.length === 0 ? (
         <div className="text-center py-12 text-gray-600">

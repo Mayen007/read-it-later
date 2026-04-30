@@ -169,6 +169,106 @@ const resolveCategories = async (categoriesInput = [], userId) => {
   return resolved;
 };
 
+const escapeMarkdown = (value) =>
+  String(value || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\*/g, '\\*')
+    .replace(/_/g, '\\_')
+    .replace(/`/g, '\\`')
+    .replace(/#/g, '\\#')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)');
+
+const formatExportDate = (value) => {
+  if (!value) return null;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toISOString().slice(0, 10);
+};
+
+const articleToMarkdown = (article) => {
+  const categories = (article.categories || [])
+    .map((category) => category?.name || category)
+    .filter(Boolean);
+  const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
+  const createdAt = formatExportDate(article.created_at || article.saved_date);
+  const notes = article.notes?.trim();
+
+  const lines = [
+    `## ${escapeMarkdown(article.title || 'Untitled')}`,
+    '',
+    `- URL: ${article.url || ''}`,
+  ];
+
+  if (createdAt) {
+    lines.push(`- Saved: ${createdAt}`);
+  }
+
+  if (tags.length > 0) {
+    lines.push(`- Tags: ${tags.map(escapeMarkdown).join(', ')}`);
+  }
+
+  if (categories.length > 0) {
+    lines.push(`- Categories: ${categories.map(escapeMarkdown).join(', ')}`);
+  }
+
+  if (notes) {
+    lines.push('', '### Notes', escapeMarkdown(notes));
+  }
+
+  if (article.excerpt) {
+    lines.push('', '### Excerpt', escapeMarkdown(article.excerpt));
+  }
+
+  return lines.join('\n');
+};
+
+const buildMarkdownExport = (articles) => {
+  const exportedAt = new Date().toISOString();
+
+  return [
+    '# Read It Later Export',
+    '',
+    `Exported: ${exportedAt}`,
+    `Articles: ${articles.length}`,
+    '',
+    ...articles.flatMap((article) => [
+      articleToMarkdown(article),
+      '',
+      '---',
+      '',
+    ]),
+  ].join('\n');
+};
+
+// GET /api/articles/export/markdown - Export all articles as Markdown
+router.get('/export/markdown', authenticateToken, async (req, res) => {
+  try {
+    const articles = await Article.find({ user_id: req.user.id })
+      .populate('categories', 'name color')
+      .select('-__v')
+      .sort({ created_at: -1 })
+      .lean()
+      .exec();
+
+    const markdown = buildMarkdownExport(articles);
+    const exportedDate = new Date().toISOString().slice(0, 10);
+    const filename = `read-it-later-export-${exportedDate}.md`;
+
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(markdown);
+  } catch (error) {
+    console.error('Error exporting articles as Markdown:', error);
+    res.status(500).json({ error: 'Failed to export articles as Markdown' });
+  }
+});
+
 // POST /api/articles - Add new article
 // Accepts optional `tags` (string[]) and `categories` (array of category ids)
 router.post('/', authenticateToken, async (req, res) => {

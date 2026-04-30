@@ -242,6 +242,14 @@ export const articlesAPI = {
     return api.put(`/articles/${id}`, { tags });
   },
 
+  /**
+   * Download the current library as a Markdown export
+   * @returns {Promise<Blob>} Markdown file response
+   */
+  exportMarkdown: () => {
+    return api.get('/articles/export/markdown', { responseType: 'blob' });
+  },
+
   // Categories API
   getCategories: () => api.get('/categories'),
   createCategory: (name, color = '') => api.post('/categories', { name, color }),
