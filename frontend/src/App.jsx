@@ -1,4 +1,11 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import { BookOpen, LogOut, User, Tag, X } from "lucide-react";
 import AddArticleForm from "./components/AddArticleForm";
 import ArticlesList from "./components/ArticlesList";
@@ -23,7 +30,10 @@ function AppContent() {
   const [articles, setArticles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [pollingIntervals, setPollingIntervals] = useState({}); // To store interval IDs for polling
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [pagination, setPagination] = useState({
@@ -38,14 +48,28 @@ function AppContent() {
     setShowLanding(false);
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm.trim());
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const loadArticles = useCallback(
-    async (page = pagination.currentPage) => {
+    async (page = pagination.currentPage, options = {}) => {
+      const { silent = false } = options;
       try {
-        setIsLoading(true);
+        if (silent) {
+          setIsSearching(true);
+        } else {
+          setIsLoading(true);
+        }
         setError("");
         const response = await articlesAPI.getAll({
           page,
           limit: pagination.limit,
+          search: debouncedSearchTerm || undefined,
         });
 
         // Handle both old format (array) and new format (object with articles and pagination)
@@ -82,10 +106,13 @@ function AppContent() {
         }
       } finally {
         setIsLoading(false);
+        setIsSearching(false);
       }
     },
-    [pagination.currentPage, pagination.limit],
+    [pagination.currentPage, pagination.limit, debouncedSearchTerm],
   );
+
+  const hasLoadedInitialArticles = useRef(false);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -103,18 +130,32 @@ function AppContent() {
     }
   }, []);
 
-  // Load articles and categories on component mount
+  // Load articles and categories when authentication state changes
   useEffect(() => {
     if (isAuthenticated) {
       loadArticles();
       loadCategories();
     }
+  }, [isAuthenticated, loadCategories]);
 
-    // Cleanup polling intervals on unmount
+  // Cleanup polling intervals when the polling map changes or on unmount
+  useEffect(() => {
     return () => {
       Object.values(pollingIntervals).forEach(clearInterval);
     };
-  }, [pollingIntervals, isAuthenticated, loadArticles, loadCategories]);
+  }, [pollingIntervals]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    if (!hasLoadedInitialArticles.current) {
+      hasLoadedInitialArticles.current = true;
+      return;
+    }
+
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    loadArticles(1, { silent: true });
+  }, [debouncedSearchTerm, isAuthenticated, loadArticles]);
 
   const handleUpdateArticle = async (idOrArticle, data = null) => {
     // If called with an article object (from polling), just update state
@@ -402,8 +443,11 @@ function AppContent() {
             onUpdateArticle={handleUpdateArticle}
             categories={categories}
             isLoading={isLoading}
+            isSearching={isSearching}
             pagination={pagination}
             onPageChange={handlePageChange}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
           />
         </main>
       </div>

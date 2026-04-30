@@ -15,8 +15,10 @@ const ArticlesList = ({
   onUpdateArticle,
   pagination,
   onPageChange,
+  searchTerm,
+  onSearchChange,
+  isSearching = false,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -66,23 +68,11 @@ const ArticlesList = ({
       filtered = filtered.filter((article) => !article.is_read);
     }
 
-    // Apply search filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (article) =>
-          article.title?.toLowerCase().includes(term) ||
-          article.excerpt?.toLowerCase().includes(term) ||
-          article.author?.toLowerCase().includes(term) ||
-          article.url?.toLowerCase().includes(term),
-      );
-    }
-
     // Sort by saved date (newest first)
     return filtered.sort(
       (a, b) => new Date(b.saved_date) - new Date(a.saved_date),
     );
-  }, [articles, searchTerm, filter, selectedCategory]);
+  }, [articles, filter, selectedCategory]);
 
   // Scroll to first match when searchTerm changes
   useEffect(() => {
@@ -101,7 +91,7 @@ const ArticlesList = ({
     unread: articles.filter((a) => !a.is_read).length,
   };
 
-  if (isLoading) {
+  if (isLoading && articles.length === 0) {
     return (
       <div className="space-y-4">
         {/* Show 3 skeleton cards while loading */}
@@ -114,9 +104,15 @@ const ArticlesList = ({
 
   return (
     <div className="flex flex-col gap-6">
+      {isSearching && articles.length > 0 && (
+        <div className="text-xs text-gray-500 transition-opacity">
+          Updating search results...
+        </div>
+      )}
+
       <ArticleFilters
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={onSearchChange}
         filter={filter}
         onFilterChange={setFilter}
         totalCount={counts.total}

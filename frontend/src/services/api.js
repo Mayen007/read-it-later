@@ -172,6 +172,10 @@ export const articlesAPI = {
       params.append('search', filters.search);
     }
 
+    if (filters.category) {
+      params.append('category', filters.category);
+    }
+
     if (filters.page) {
       params.append('page', filters.page);
     }

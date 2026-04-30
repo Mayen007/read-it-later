@@ -7,6 +7,8 @@ const authenticateToken = require('../middleware/auth');
 
 const router = express.Router();
 
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // Helper: Extract metadata from URL
 const extractMetadata = async (url) => {
   try {
@@ -92,16 +94,45 @@ const extractMetadata = async (url) => {
 // Supports optional query params: search, category (category id), page, limit
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const { search, category, page = 1, limit = 12 } = req.query;
+    const { search, category, unread_only, page = 1, limit = 12 } = req.query;
 
     // Parse pagination parameters
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10))); // Max 100 per page
     const skip = (pageNum - 1) * limitNum;
 
+    const searchText = String(search || '').trim();
+    const searchRegex = searchText ? new RegExp(escapeRegex(searchText), 'i') : null;
+
     let query = { user_id: req.user.id }; // Filter by authenticated user
-    if (search) query.title = { $regex: search, $options: 'i' };
+    if (unread_only === 'true') query.is_read = false;
     if (category) query.categories = category; // filter by category id
+
+    if (searchRegex) {
+      const matchingCategories = await Category.find({
+        user_id: req.user.id,
+        name: searchRegex,
+      })
+        .select('_id')
+        .lean()
+        .exec();
+
+      const searchCategoryIds = matchingCategories.map((cat) => cat._id);
+      const searchConditions = [
+        { title: searchRegex },
+        { excerpt: searchRegex },
+        { author: searchRegex },
+        { url: searchRegex },
+        { notes: searchRegex },
+        { tags: searchRegex },
+      ];
+
+      if (searchCategoryIds.length > 0) {
+        searchConditions.push({ categories: { $in: searchCategoryIds } });
+      }
+
+      query.$or = searchConditions;
+    }
 
     // Get total count for pagination metadata
     const totalCount = await Article.countDocuments(query);
