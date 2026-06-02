@@ -164,15 +164,17 @@ export default function Login({ onSwitchToRegister }) {
               </button>
             </div>
 
-            <div className="text-center">
+            <p className="text-center">
+              Don't have an account?
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-sm text-blue-600 hover:text-blue-500 cursor-pointer"
+                className="text-sm ml-0.5 text-blue-600 hover:text-blue-500 cursor-pointer"
               >
-                Don't have an account? Register
+                {" "}
+                Sign Up
               </button>
-            </div>
+            </p>
           </form>
         </div>
       </div>

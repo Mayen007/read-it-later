@@ -273,15 +273,16 @@ export default function Register({ onSwitchToLogin }) {
               </button>
             </div>
 
-            <div className="text-center">
+            <p className="text-center">
+              Already have an account?
               <button
                 type="button"
                 onClick={onSwitchToLogin}
-                className="text-sm text-blue-600 hover:text-blue-500 cursor-pointer"
+                className="text-sm ml-0.5 text-blue-600 hover:text-blue-500 cursor-pointer"
               >
-                Already have an account? Sign in
+                Sign in
               </button>
-            </div>
+            </p>
           </form>
         </div>
       </div>
