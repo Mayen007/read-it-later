@@ -57,7 +57,7 @@ function AppContent() {
   }, [searchTerm]);
 
   const loadArticles = useCallback(
-    async (page = pagination.currentPage, options = {}) => {
+    async (page = pagination.currentPage, options = {}, search) => {
       const { silent = false } = options;
       try {
         if (silent) {
@@ -69,7 +69,7 @@ function AppContent() {
         const response = await articlesAPI.getAll({
           page,
           limit: pagination.limit,
-          search: debouncedSearchTerm || undefined,
+          search: search || undefined,
         });
 
         // Handle both old format (array) and new format (object with articles and pagination)
@@ -109,7 +109,7 @@ function AppContent() {
         setIsSearching(false);
       }
     },
-    [pagination.currentPage, pagination.limit, debouncedSearchTerm],
+    [pagination.currentPage, pagination.limit],
   );
 
   const hasLoadedInitialArticles = useRef(false);
@@ -133,10 +133,13 @@ function AppContent() {
   // Load articles and categories when authentication state changes
   useEffect(() => {
     if (isAuthenticated) {
+      // Initial load on auth should use default params; debounced searches
+      // are handled by a separate effect. Avoid referencing
+      // `debouncedSearchTerm` here to keep this effect stable.
       loadArticles();
       loadCategories();
     }
-  }, [isAuthenticated, loadCategories]);
+  }, [isAuthenticated, loadArticles, loadCategories]);
 
   // Cleanup polling intervals when the polling map changes or on unmount
   useEffect(() => {
@@ -154,7 +157,7 @@ function AppContent() {
     }
 
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
-    loadArticles(1, { silent: true });
+    loadArticles(1, { silent: true }, debouncedSearchTerm);
   }, [debouncedSearchTerm, isAuthenticated, loadArticles]);
 
   const handleUpdateArticle = async (idOrArticle, data = null) => {
@@ -221,7 +224,7 @@ function AppContent() {
 
     // Reset to page 1 and reload articles when adding new article
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
-    await loadArticles(1);
+    await loadArticles(1, {}, debouncedSearchTerm);
 
     // Start polling for this specific article's status
     startPolling(newArticle._id);
@@ -303,7 +306,7 @@ function AppContent() {
       await articlesAPI.deleteCategory(id);
       setCategories((prev) => prev.filter((cat) => cat && cat._id !== id));
       // Reload articles to update category references
-      await loadArticles();
+      await loadArticles(undefined, {}, debouncedSearchTerm);
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error("Error deleting category:", error);
@@ -314,7 +317,7 @@ function AppContent() {
 
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, currentPage: newPage }));
-    loadArticles(newPage);
+    loadArticles(newPage, {}, debouncedSearchTerm);
     // Scroll to top of page
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -428,7 +431,7 @@ function AppContent() {
             <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <p className="text-sm sm:text-base">{error}</p>
               <button
-                onClick={loadArticles}
+                onClick={() => loadArticles(undefined, {}, debouncedSearchTerm)}
                 className="px-4 py-2 bg-red-500 text-white rounded text-sm cursor-pointer hover:bg-red-600 transition-colors whitespace-nowrap shrink-0"
               >
                 Retry
@@ -447,6 +450,7 @@ function AppContent() {
             pagination={pagination}
             onPageChange={handlePageChange}
             searchTerm={searchTerm}
+            debouncedSearchTerm={debouncedSearchTerm}
             onSearchChange={setSearchTerm}
           />
         </main>

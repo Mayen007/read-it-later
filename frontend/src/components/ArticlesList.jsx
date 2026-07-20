@@ -16,6 +16,7 @@ const ArticlesList = ({
   pagination,
   onPageChange,
   searchTerm,
+  debouncedSearchTerm,
   onSearchChange,
   isSearching = false,
 }) => {
@@ -24,6 +25,7 @@ const ArticlesList = ({
   const [isExporting, setIsExporting] = useState(false);
 
   const articleRefs = useRef({});
+  const containerRef = useRef(null);
 
   const handleExportMarkdown = async () => {
     if (isExporting) return;
@@ -74,16 +76,17 @@ const ArticlesList = ({
     );
   }, [articles, filter, selectedCategory]);
 
-  // Scroll to first match when searchTerm changes
+  // When a debounced search is performed, scroll the whole list container
+  // into view (so the search box / filters remain visible) instead of
+  // centering the first result which hides the search input while typing.
   useEffect(() => {
-    if (searchTerm.trim() && filteredArticles.length > 0) {
-      const firstId = filteredArticles[0]._id;
-      const ref = articleRefs.current[firstId];
-      if (ref && ref.scrollIntoView) {
-        ref.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (debouncedSearchTerm?.trim() && filteredArticles.length > 0) {
+      const el = containerRef.current;
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, [searchTerm, filteredArticles]);
+  }, [debouncedSearchTerm, filteredArticles]);
 
   const counts = {
     total: articles.length,
@@ -103,7 +106,7 @@ const ArticlesList = ({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div ref={containerRef} className="flex flex-col gap-6">
       {isSearching && articles.length > 0 && (
         <div className="text-xs text-gray-500 transition-opacity">
           Updating search results...

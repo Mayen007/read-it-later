@@ -6,6 +6,7 @@ import {
   BookOpen,
   Tag,
 } from "lucide-react";
+import SearchBar from "./SearchBar";
 
 const ArticleFilters = ({
   searchTerm,
@@ -22,19 +23,12 @@ const ArticleFilters = ({
   return (
     <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-3 sm:gap-4">
       <div className="relative flex items-center">
-        <Search
-          size={18}
-          className="absolute left-3 text-gray-400 pointer-events-none"
-        />
-        <input
-          id="search-articles"
-          name="search-articles"
-          type="search"
-          placeholder="Search articles..."
+        <SearchBar
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="Search articles"
-          className="w-full pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+          onChange={onSearchChange}
+          onSubmit={() => {
+            /* optionally trigger immediate search */
+          }}
         />
       </div>
 
@@ -99,7 +93,7 @@ const ArticleFilters = ({
             {selectedCategory && (
               <button
                 onClick={() => onCategoryChange(null)}
-                className="text-xs text-blue-600 hover:text-blue-700 underline"
+                className="text-sm text-blue-500 font-semibold hover:text-blue-600 hover:underline hover:cursor-pointer transition-colors"
               >
                 Clear filter
               </button>
