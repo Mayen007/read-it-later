@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://readit-backend-r69u.onrender.com/api';
+const API_BASE_URL = 'http://localhost:4000/api';
 
 // Check authentication status on load
 document.addEventListener('DOMContentLoaded', async function () {

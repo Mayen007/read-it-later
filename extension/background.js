@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://readit-backend-r69u.onrender.com/api';
+const API_BASE_URL = 'http://localhost:4000/api';
 
 async function getStoredToken() {
   return new Promise((resolve) => {
@@ -14,6 +14,12 @@ async function getStoredToken() {
 async function storeAccessToken(accessToken) {
   return new Promise((resolve) => {
     chrome.storage.local.set({ accessToken }, resolve);
+  });
+}
+
+async function clearStoredTokens() {
+  return new Promise((resolve) => {
+    chrome.storage.local.remove(['accessToken', 'refreshToken'], resolve);
   });
 }
 
@@ -34,7 +40,7 @@ async function refreshAccessToken(refreshToken) {
     return data.accessToken;
   } catch (error) {
     // Clear invalid tokens
-    chrome.storage.local.remove(['accessToken', 'refreshToken']);
+    await clearStoredTokens();
     throw error;
   }
 }
@@ -54,8 +60,13 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
   let response = await fetch(url, options);
 
-  // If 401, try to refresh token and retry
-  if (response.status === 401 && tokens.refreshToken) {
+  // Refresh expired or invalid access tokens, then retry once.
+  if (response.status === 401 || response.status === 403) {
+    if (!tokens.refreshToken) {
+      await clearStoredTokens();
+      throw new Error('Authentication required');
+    }
+
     try {
       const newAccessToken = await refreshAccessToken(tokens.refreshToken);
 
