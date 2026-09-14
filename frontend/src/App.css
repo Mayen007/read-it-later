@@ -107,7 +107,6 @@ body {
 }
 
 .url-input:focus {
-  outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
 }
@@ -239,7 +238,7 @@ body {
   color: var(--text-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.2s, color 0.2s, background-color 0.2s;
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -312,7 +311,7 @@ body {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  transition: all 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
   display: flex;
   flex-direction: column;
 }
@@ -451,7 +450,7 @@ body {
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .btn-toggle-read.unread {
@@ -616,12 +615,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .confirm-dialog-close:hover {
   color: var(--text-secondary);
   background-color: var(--bg-tertiary);
+}
+
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 .confirm-dialog-body {

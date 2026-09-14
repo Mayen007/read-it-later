@@ -41,7 +41,7 @@ const ArticleFilters = ({
           onClick={() => onFilterChange("all")}
           aria-pressed={filter === "all"}
           aria-label={`Show all articles (${totalCount})`}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-[background-color,border-color,color,transform] text-xs sm:text-sm font-medium active:scale-95 ${
             filter === "all"
               ? "bg-blue-500 border-blue-500 text-white"
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
@@ -55,7 +55,7 @@ const ArticleFilters = ({
           onClick={() => onFilterChange("unread")}
           aria-pressed={filter === "unread"}
           aria-label={`Show unread articles (${unreadCount})`}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-[background-color,border-color,color,transform] text-xs sm:text-sm font-medium active:scale-95 ${
             filter === "unread"
               ? "bg-blue-500 border-blue-500 text-white"
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
@@ -69,7 +69,7 @@ const ArticleFilters = ({
           onClick={() => onFilterChange("read")}
           aria-pressed={filter === "read"}
           aria-label={`Show read articles (${readCount})`}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-[background-color,border-color,color,transform] text-xs sm:text-sm font-medium active:scale-95 ${
             filter === "read"
               ? "bg-blue-500 border-blue-500 text-white"
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
@@ -104,7 +104,7 @@ const ArticleFilters = ({
               onClick={() => onCategoryChange(null)}
               aria-pressed={selectedCategory === null}
               aria-label="Show all categories"
-              className={`px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+              className={`px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-[background-color,border-color,color,transform] text-xs sm:text-sm font-medium active:scale-95 ${
                 selectedCategory === null
                   ? "bg-gray-800 border-gray-800 text-white"
                   : "bg-white border-gray-200 text-gray-600 hover:border-gray-800 hover:text-gray-800"
@@ -118,7 +118,7 @@ const ArticleFilters = ({
                 onClick={() => onCategoryChange(category._id)}
                 aria-pressed={selectedCategory === category._id}
                 aria-label={`Filter by ${category.name}`}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-all text-xs sm:text-sm font-medium active:scale-95 ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 border-2 rounded-lg cursor-pointer transition-[background-color,border-color,color,transform] text-xs sm:text-sm font-medium active:scale-95 ${
                   selectedCategory === category._id
                     ? "border-gray-800 text-white"
                     : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"

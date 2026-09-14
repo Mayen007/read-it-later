@@ -53,7 +53,8 @@ const CategoryManager = ({
     if (
       categories.some(
         (cat) =>
-          cat && cat.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
+          cat &&
+          cat.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
       )
     ) {
       setError("A category with this name already exists");
@@ -101,7 +102,8 @@ const CategoryManager = ({
     if (
       categories.some(
         (cat) =>
-          cat && cat._id !== id &&
+          cat &&
+          cat._id !== id &&
           cat.name.toLowerCase() === editName.trim().toLowerCase(),
       )
     ) {
@@ -156,7 +158,9 @@ const CategoryManager = ({
     setDeletingId(null);
   };
 
-  const deletingCategory = categories.find((cat) => cat && cat._id === deletingId);
+  const deletingCategory = categories.find(
+    (cat) => cat && cat._id === deletingId,
+  );
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -181,7 +185,7 @@ const CategoryManager = ({
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="New category name..."
               disabled={localLoading || isLoading}
-              className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-50 disabled:opacity-60"
+              className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm transition-[border-color,box-shadow,opacity,background-color] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-50 disabled:opacity-60"
               aria-label="New category name"
             />
             <div className="flex gap-2">
@@ -199,7 +203,7 @@ const CategoryManager = ({
               <button
                 type="submit"
                 disabled={localLoading || isLoading || !newCategoryName.trim()}
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-blue-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-lg text-sm font-medium transition-[background-color,transform,opacity] hover:bg-blue-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 <Plus size={16} />
                 Add
@@ -217,7 +221,7 @@ const CategoryManager = ({
                 key={color}
                 type="button"
                 onClick={() => setNewCategoryColor(color)}
-                className={`w-6 h-6 rounded-md border-2 transition-all hover:scale-110 ${
+                className={`w-6 h-6 rounded-md border-2 transition-[border-color,box-shadow,transform] hover:scale-110 ${
                   newCategoryColor === color
                     ? "border-gray-900 shadow-md"
                     : "border-gray-200"
@@ -252,81 +256,83 @@ const CategoryManager = ({
               </p>
             </div>
           ) : (
-            categories.filter(cat => cat).map((category) => (
-              <div
-                key={category._id}
-                className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-all"
-              >
-                {editingId === category._id ? (
-                  // Edit Mode
-                  <>
-                    <input
-                      type="color"
-                      value={editColor}
-                      onChange={(e) => setEditColor(e.target.value)}
-                      disabled={localLoading}
-                      className="w-10 h-10 rounded-md border-2 border-gray-200 cursor-pointer disabled:opacity-60"
-                      aria-label="Edit category color"
-                    />
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      disabled={localLoading}
-                      className="flex-1 px-3 py-2 border-2 border-blue-500 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:opacity-60"
-                      aria-label="Edit category name"
-                      autoFocus
-                    />
-                    <button
-                      onClick={() => handleSaveEdit(category._id)}
-                      disabled={localLoading || !editName.trim()}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                      title="Save changes"
-                    >
-                      <Check size={18} />
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      disabled={localLoading}
-                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-60"
-                      title="Cancel editing"
-                    >
-                      <X size={18} />
-                    </button>
-                  </>
-                ) : (
-                  // View Mode
-                  <>
-                    <div
-                      className="w-10 h-10 rounded-md shrink-0"
-                      style={{
-                        backgroundColor: category.color || DEFAULT_COLORS[0],
-                      }}
-                      aria-hidden="true"
-                    />
-                    <span className="flex-1 text-gray-900 font-medium">
-                      {category.name}
-                    </span>
-                    <button
-                      onClick={() => handleStartEdit(category)}
-                      disabled={localLoading || isLoading}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                      title="Edit category"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(category._id)}
-                      disabled={localLoading || isLoading}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                      title="Delete category"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </>
-                )}
-              </div>
-            ))
+            categories
+              .filter((cat) => cat)
+              .map((category) => (
+                <div
+                  key={category._id}
+                  className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-[border-color]"
+                >
+                  {editingId === category._id ? (
+                    // Edit Mode
+                    <>
+                      <input
+                        type="color"
+                        value={editColor}
+                        onChange={(e) => setEditColor(e.target.value)}
+                        disabled={localLoading}
+                        className="w-10 h-10 rounded-md border-2 border-gray-200 cursor-pointer disabled:opacity-60"
+                        aria-label="Edit category color"
+                      />
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        disabled={localLoading}
+                        className="flex-1 px-3 py-2 border-2 border-blue-500 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:opacity-60"
+                        aria-label="Edit category name"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => handleSaveEdit(category._id)}
+                        disabled={localLoading || !editName.trim()}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-[background-color,opacity] disabled:opacity-60 disabled:cursor-not-allowed"
+                        title="Save changes"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={localLoading}
+                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-[background-color,opacity] disabled:opacity-60"
+                        title="Cancel editing"
+                      >
+                        <X size={18} />
+                      </button>
+                    </>
+                  ) : (
+                    // View Mode
+                    <>
+                      <div
+                        className="w-10 h-10 rounded-md shrink-0"
+                        style={{
+                          backgroundColor: category.color || DEFAULT_COLORS[0],
+                        }}
+                        aria-hidden="true"
+                      />
+                      <span className="flex-1 text-gray-900 font-medium">
+                        {category.name}
+                      </span>
+                      <button
+                        onClick={() => handleStartEdit(category)}
+                        disabled={localLoading || isLoading}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-[background-color,opacity] disabled:opacity-60 disabled:cursor-not-allowed"
+                        title="Edit category"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(category._id)}
+                        disabled={localLoading || isLoading}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-[background-color,opacity] disabled:opacity-60 disabled:cursor-not-allowed"
+                        title="Delete category"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              ))
           )}
         </div>
 

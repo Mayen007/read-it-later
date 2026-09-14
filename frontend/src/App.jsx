@@ -319,14 +319,19 @@ function AppContent() {
     setPagination((prev) => ({ ...prev, currentPage: newPage }));
     loadArticles(newPage, {}, debouncedSearchTerm);
     // Scroll to top of page
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
   };
 
   // Show spinner while checking auth
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Spinner text="Loading..." />
+        <Spinner text="Loading…" />
       </div>
     );
   }
@@ -337,7 +342,7 @@ function AppContent() {
       <Suspense
         fallback={
           <div className="min-h-screen flex items-center justify-center">
-            <Spinner text="Loading..." />
+            <Spinner text="Loading…" />
           </div>
         }
       >
@@ -354,12 +359,22 @@ function AppContent() {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-blue-600 focus:shadow-lg"
+      >
+        Skip to content
+      </a>
       <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
         <header className="text-center mb-8 sm:mb-12">
           <div className="flex items-center justify-between mb-4 gap-2">
             {/* Mobile: compact layout */}
             <div className="flex sm:hidden items-center gap-2">
-              <BookOpen size={24} className="text-blue-500 shrink-0" />
+              <BookOpen
+                size={24}
+                aria-hidden="true"
+                className="text-blue-500 shrink-0"
+              />
               <h1 className="text-2xl font-bold text-blue-500 truncate">
                 Read It Later
               </h1>
@@ -368,14 +383,21 @@ function AppContent() {
             {/* Desktop: centered with side elements */}
             <div className="hidden sm:flex flex-1"></div>
             <h1 className="hidden sm:flex items-center justify-center gap-2 sm:gap-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-500">
-              <BookOpen size={32} className="sm:w-10 sm:h-10" />
+              <BookOpen
+                size={32}
+                aria-hidden="true"
+                className="sm:w-10 sm:h-10"
+              />
               Read It Later
             </h1>
 
             <div className="flex flex-1 justify-end items-center gap-2 sm:gap-3">
               <button
                 onClick={() => setShowCategoryManager(!showCategoryManager)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm rounded-lg cursor-pointer transition-all ${
+                aria-label={
+                  showCategoryManager ? "Hide Categories" : "Manage Categories"
+                }
+                className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm rounded-lg cursor-pointer transition-[background-color,color] ${
                   showCategoryManager
                     ? "bg-blue-500 text-white"
                     : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
@@ -385,9 +407,9 @@ function AppContent() {
                 }
               >
                 {showCategoryManager ? (
-                  <X size={18} className="shrink-0" />
+                  <X size={18} aria-hidden="true" className="shrink-0" />
                 ) : (
-                  <Tag size={18} className="shrink-0" />
+                  <Tag size={18} aria-hidden="true" className="shrink-0" />
                 )}
                 <span className="hidden sm:inline">
                   {showCategoryManager ? "Close" : "Categories"}
@@ -397,14 +419,15 @@ function AppContent() {
                 className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
                 title={user?.email}
               >
-                <User size={20} className="sm:w-5 sm:h-5" />
+                <User size={20} aria-hidden="true" className="sm:w-5 sm:h-5" />
               </div>
               <button
                 onClick={logout}
+                aria-label="Logout"
                 className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm text-gray-600 hover:text-red-600 cursor-pointer transition-colors rounded-lg hover:bg-gray-50"
                 title="Logout"
               >
-                <LogOut size={18} className="shrink-0" />
+                <LogOut size={18} aria-hidden="true" className="shrink-0" />
                 <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
@@ -414,7 +437,7 @@ function AppContent() {
           </p>
         </header>
 
-        <main className="flex flex-col gap-6 sm:gap-8">
+        <main id="main-content" className="flex flex-col gap-6 sm:gap-8">
           {/* Category Manager - Collapsible */}
           {showCategoryManager && (
             <CategoryManager
@@ -428,7 +451,11 @@ function AppContent() {
           <AddArticleForm onAddArticle={handleAddArticle} />
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div
+              role="alert"
+              aria-live="polite"
+              className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4"
+            >
               <p className="text-sm sm:text-base">{error}</p>
               <button
                 onClick={() => loadArticles(undefined, {}, debouncedSearchTerm)}

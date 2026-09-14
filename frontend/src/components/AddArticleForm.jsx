@@ -102,10 +102,10 @@ const AddArticleForm = ({ onAddArticle }) => {
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter article URL..."
+            placeholder="Enter article URL…"
             disabled={isLoading}
             aria-label="Article URL"
-            className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-50 disabled:opacity-60"
+            className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-[border-color,box-shadow,opacity,background-color] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-50 disabled:opacity-60"
           />
           <div className="w-full lg:min-w-[220px] lg:max-w-[280px] lg:shrink-0">
             <CreatableSelect
@@ -114,7 +114,7 @@ const AddArticleForm = ({ onAddArticle }) => {
               value={selected}
               onChange={(val) => setSelected(val)}
               onCreateOption={handleCreateCategory}
-              placeholder="Categories..."
+              placeholder="Categories…"
               isDisabled={isLoading}
               aria-label="Categories"
               styles={{
@@ -134,7 +134,7 @@ const AddArticleForm = ({ onAddArticle }) => {
             type="submit"
             disabled={isLoading || !url.trim()}
             aria-label="Add article"
-            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-all hover:bg-blue-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap lg:shrink-0"
+            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-[background-color,transform,opacity] hover:bg-blue-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap lg:shrink-0"
           >
             <Plus size={16} className="shrink-0" />
             <span className="hidden sm:inline">

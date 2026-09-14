@@ -6,7 +6,7 @@ export default function SearchBar({
   onChange = () => {},
   onDebouncedChange = () => {},
   onSubmit = () => {},
-  placeholder = "Search articles...",
+  placeholder = "Search articles…",
   debounceMs = 300,
 }) {
   const [local, setLocal] = useState(value);
@@ -22,10 +22,13 @@ export default function SearchBar({
     <div className="relative flex items-center w-full">
       <Search
         size={18}
+        aria-hidden="true"
         className="absolute left-3 text-gray-400 pointer-events-none"
       />
       <input
         type="search"
+        name="search"
+        aria-label="Search articles"
         value={local}
         placeholder={placeholder}
         onChange={(e) => {
@@ -33,7 +36,7 @@ export default function SearchBar({
           onChange(e.target.value);
         }}
         onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-        className="w-full pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-all focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+        className="w-full pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-[border-color,box-shadow] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
       />
     </div>
   );

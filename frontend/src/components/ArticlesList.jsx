@@ -23,9 +23,15 @@ const ArticlesList = ({
   const [filter, setFilter] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
 
   const articleRefs = useRef({});
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleExportMarkdown = async () => {
     if (isExporting) return;
@@ -108,8 +114,12 @@ const ArticlesList = ({
   return (
     <div ref={containerRef} className="flex flex-col gap-6">
       {isSearching && articles.length > 0 && (
-        <div className="text-xs text-gray-500 transition-opacity">
-          Updating search results...
+        <div
+          className="text-xs text-gray-500 transition-opacity"
+          role="status"
+          aria-live="polite"
+        >
+          Updating search results…
         </div>
       )}
 
@@ -192,6 +202,7 @@ const ArticlesList = ({
                 onDelete={onDeleteArticle}
                 categories={categories}
                 onUpdateArticle={onUpdateArticle}
+                currentTime={currentTime}
               />
             </div>
           ))}

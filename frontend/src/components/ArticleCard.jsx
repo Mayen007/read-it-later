@@ -21,28 +21,14 @@ const ArticleCard = ({
   onDelete,
   categories = [],
   onUpdateArticle,
+  currentTime = new Date(),
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isEditingCategories, setIsEditingCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [selectedNotes, setSelectedNotes] = useState("");
-
-  // Update current time every second for real-time timestamp updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000); // Update every second for more accurate timestamps
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Force immediate update when article changes (new article added)
-  useEffect(() => {
-    setCurrentTime(new Date());
-  }, [article.created_at, article.saved_date, article.id]); // Trigger when created_at/saved_date or id changes
 
   // Initialize selected categories from article
   useEffect(() => {
@@ -207,7 +193,7 @@ const ArticleCard = ({
 
   return (
     <article
-      className={`bg-white rounded-xl shadow-sm border transition-all hover:shadow-md flex flex-col h-full ${
+      className={`bg-white rounded-xl shadow-sm border transition-[box-shadow,transform] hover:shadow-md flex flex-col h-full ${
         article.is_read ? "border-gray-200 opacity-75" : "border-gray-200"
       } ${
         article.status === "pending" ? "border-yellow-200 bg-yellow-50/30" : ""
@@ -226,6 +212,8 @@ const ArticleCard = ({
           <img
             src={article.thumbnail_url || "/logo-optimized.png"}
             alt={article.title}
+            width="640"
+            height="360"
             loading="lazy"
             className="w-full h-full object-cover transition-transform hover:scale-105"
             onError={(e) => {
@@ -318,7 +306,9 @@ const ArticleCard = ({
               <span className="text-xs font-medium uppercase tracking-wide text-blue-700">
                 Notes
               </span>
-              <span className="text-[11px] text-blue-500">Visible to you only</span>
+              <span className="text-[11px] text-blue-500">
+                Visible to you only
+              </span>
             </div>
             <textarea
               value={selectedNotes}
@@ -331,7 +321,7 @@ const ArticleCard = ({
               <button
                 onClick={handleSaveNotes}
                 disabled={isLoading}
-                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-all hover:bg-blue-600 hover:cursor-pointer disabled:opacity-60"
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-[background-color,opacity] hover:bg-blue-600 hover:cursor-pointer disabled:opacity-60"
               >
                 <Check size={14} />
                 Save
@@ -339,7 +329,7 @@ const ArticleCard = ({
               <button
                 onClick={handleCancelEditNotes}
                 disabled={isLoading}
-                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-all hover:bg-gray-200 hover:cursor-pointer disabled:opacity-60"
+                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-[background-color,opacity] hover:bg-gray-200 hover:cursor-pointer disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -405,7 +395,7 @@ const ArticleCard = ({
               <button
                 onClick={handleSaveCategories}
                 disabled={isLoading}
-                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-all hover:bg-blue-600 disabled:opacity-60"
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-medium transition-[background-color,opacity] hover:bg-blue-600 disabled:opacity-60"
               >
                 <Check size={14} />
                 Save
@@ -413,7 +403,7 @@ const ArticleCard = ({
               <button
                 onClick={handleCancelEditCategories}
                 disabled={isLoading}
-                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-all hover:bg-gray-200 disabled:opacity-60"
+                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-xs font-medium transition-[background-color,opacity] hover:bg-gray-200 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -426,7 +416,7 @@ const ArticleCard = ({
                 {article.categories.map((c) => (
                   <span
                     key={c._id || c}
-                    className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-sm"
+                    className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium tracking-wide transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-sm"
                     style={{
                       backgroundColor: c.color || "#eef2ff",
                       color: c.color ? "#ffffff" : "#4f46e5",
@@ -463,7 +453,7 @@ const ArticleCard = ({
               article.status === "pending" ||
               article.status === "failed"
             }
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-[background-color,color,transform,opacity] cursor-pointer ${
               article.is_read
                 ? "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200"
                 : "bg-green-500 text-white hover:bg-green-600"
@@ -476,7 +466,7 @@ const ArticleCard = ({
 
           <button
             onClick={handleDelete}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition-all hover:bg-red-100 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition-[background-color,opacity] hover:bg-red-100 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             disabled={isLoading || article.status === "pending"}
             title="Delete article"
           >

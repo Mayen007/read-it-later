@@ -21,7 +21,7 @@ export default function Landing({ onGetStarted }) {
           </p>
           <button
             onClick={onGetStarted}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl cursor-pointer transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-[background-color,box-shadow,transform] shadow-lg hover:shadow-xl cursor-pointer transform hover:-translate-y-0.5"
           >
             Get Started
           </button>
@@ -160,7 +160,7 @@ export default function Landing({ onGetStarted }) {
         </p>
         <button
           onClick={onGetStarted}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl transform cursor-pointer hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 transition-[background-color,box-shadow,transform] shadow-lg hover:shadow-xl transform cursor-pointer hover:-translate-y-0.5"
         >
           Get Started Free
         </button>

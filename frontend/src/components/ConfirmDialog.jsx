@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, X } from "lucide-react";
 
@@ -12,20 +12,43 @@ const ConfirmDialog = ({
   cancelText = "Cancel",
   type = "danger", // "danger", "warning", "info"
 }) => {
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
+
   // Handle escape key
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && isOpen) {
+    if (!isOpen) return undefined;
+
+    previousFocusRef.current = document.activeElement;
+    dialogRef.current?.focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
         onCancel();
+        return;
+      }
+
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-    }
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus?.();
     };
   }, [isOpen, onCancel]);
 
@@ -40,7 +63,9 @@ const ConfirmDialog = ({
       aria-labelledby="dialog-title"
     >
       <div
-        className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden"
+        ref={dialogRef}
+        tabIndex="-1"
+        className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center gap-3 sm:gap-4">
@@ -53,7 +78,11 @@ const ConfirmDialog = ({
                   : "bg-blue-100 text-blue-600"
             }`}
           >
-            <AlertTriangle size={24} className="sm:w-6 sm:h-6" />
+            <AlertTriangle
+              size={24}
+              aria-hidden="true"
+              className="sm:w-6 sm:h-6"
+            />
           </div>
           <h3
             id="dialog-title"
@@ -66,7 +95,7 @@ const ConfirmDialog = ({
             onClick={onCancel}
             aria-label="Close dialog"
           >
-            <X size={18} />
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 
@@ -78,13 +107,13 @@ const ConfirmDialog = ({
 
         <div className="p-4 sm:p-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
           <button
-            className="flex-1 px-4 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 px-4 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-[background-color,transform] cursor-pointer"
             onClick={onCancel}
           >
             {cancelText}
           </button>
           <button
-            className={`flex-1 px-4 py-2.5 text-white rounded-lg font-medium active:scale-95 transition-all cursor-pointer ${
+            className={`flex-1 px-4 py-2.5 text-white rounded-lg font-medium active:scale-95 transition-[background-color,transform] cursor-pointer ${
               type === "danger"
                 ? "bg-red-500 hover:bg-red-600"
                 : type === "warning"
@@ -92,7 +121,6 @@ const ConfirmDialog = ({
                   : "bg-blue-500 hover:bg-blue-600"
             }`}
             onClick={onConfirm}
-            autoFocus
           >
             {confirmText}
           </button>
