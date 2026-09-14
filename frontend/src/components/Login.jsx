@@ -181,11 +181,18 @@ export default function Login({ onSwitchToRegister }) {
 
       {/* Right side - Visual */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        <img
-          src="/login-img.png"
-          alt="Welcome back to your organized reading collection"
-          className="w-full h-full object-cover"
-        />
+        <picture className="w-full h-full">
+          <source srcSet="/login-img.webp" type="image/webp" />
+          <img
+            src="/login-img.png"
+            alt="Welcome back to your organized reading collection"
+            width="1024"
+            height="1536"
+            loading="eager"
+            fetchPriority="high"
+            className="w-full h-full object-cover"
+          />
+        </picture>
       </div>
     </div>
   );

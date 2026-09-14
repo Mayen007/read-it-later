@@ -94,6 +94,17 @@ async function main() {
     format: 'webp',
   });
 
+  // WebP versions for the desktop auth panels
+  await optimizeImage(path.join(publicDir, 'login-img.png'), path.join(publicDir, 'login-img.webp'), {
+    quality: 78,
+    format: 'webp',
+  });
+
+  await optimizeImage(path.join(publicDir, 'register-img.png'), path.join(publicDir, 'register-img.webp'), {
+    quality: 78,
+    format: 'webp',
+  });
+
   console.log('✓ Image optimization complete!');
   console.log('\nRecommended usage:');
   console.log('1. Use logo.webp for modern browsers');

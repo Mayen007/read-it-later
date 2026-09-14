@@ -289,11 +289,18 @@ export default function Register({ onSwitchToLogin }) {
 
       {/* Right side - Visual */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        <img
-          src="/register-img.png"
-          alt="Start organizing your articles today"
-          className="w-full h-full object-cover"
-        />
+        <picture className="w-full h-full">
+          <source srcSet="/register-img.webp" type="image/webp" />
+          <img
+            src="/register-img.png"
+            alt="Start organizing your articles today"
+            width="1024"
+            height="1536"
+            loading="eager"
+            fetchPriority="high"
+            className="w-full h-full object-cover"
+          />
+        </picture>
       </div>
     </div>
   );
