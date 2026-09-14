@@ -203,9 +203,9 @@ async function handleSaveArticle() {
       saveBtn.textContent = 'Save Current Page';
 
       if (response && response.success) {
-        statusDiv.textContent = 'Saved successfully!';
+        statusDiv.textContent = 'Saved! Metadata is processing.';
         statusDiv.className = 'status-success';
-      } else if (response && response.data && response.data.error === 'This URL has already been saved.') {
+      } else if (response && response.error === 'Article already exists') {
         statusDiv.textContent = 'Already saved!';
         statusDiv.className = 'status-success';
       } else if (response && response.error === 'Authentication required') {

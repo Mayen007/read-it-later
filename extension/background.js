@@ -106,13 +106,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     makeAuthenticatedRequest(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: message.url })
+      body: JSON.stringify({ url: message.url, title: message.title })
     })
       .then(res => {
         if (res.ok) {
           return res.json();
         } else {
-          return res.json().then(errorData => Promise.reject(errorData));
+          return res.json()
+            .catch(() => ({}))
+            .then(errorData => Promise.reject({ ...errorData, status: res.status }));
         }
       })
       .then(data => sendResponse({ success: true, data }))
@@ -120,6 +122,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Handle authentication errors
         if (error.message === 'Authentication required') {
           sendResponse({ success: false, error: 'Authentication required' });
+        } else if (error.status === 409) {
+          sendResponse({ success: false, error: 'Article already exists' });
+        } else if (!error.status) {
+          sendResponse({ success: false, error: 'Unable to reach the API. Check that the backend is running.' });
         } else {
           sendResponse({ success: false, data: error });
         }

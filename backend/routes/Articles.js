@@ -304,7 +304,7 @@ router.get('/export/markdown', authenticateToken, async (req, res) => {
 // Accepts optional `tags` (string[]) and `categories` (array of category ids)
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { url, tags = [], categories = [] } = req.body;
+    const { url, title, tags = [], categories = [] } = req.body;
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
     const existing = await Article.findOne({ url, user_id: req.user.id });
@@ -319,7 +319,7 @@ router.post('/', authenticateToken, async (req, res) => {
       tags,
       categories: categoryIds,
       status: 'pending',
-      title: 'Processing...',
+      title: title || 'Processing...',
       excerpt: 'Metadata extraction in progress.',
       user_id: req.user.id
     });
