@@ -158,6 +158,14 @@ async function handleSaveArticle() {
   statusDiv.className = 'status-loading loading-dots';
 
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError || !tabs[0] || !tabs[0].url) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Current Page';
+      statusDiv.textContent = 'This page cannot be saved.';
+      statusDiv.className = 'status-error';
+      return;
+    }
+
     const url = tabs[0].url;
     const title = tabs[0].title;
 
@@ -166,6 +174,14 @@ async function handleSaveArticle() {
       url: url,
       title: title
     }, async function (response) {
+      if (chrome.runtime.lastError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Current Page';
+        statusDiv.textContent = 'Unable to contact the extension service.';
+        statusDiv.className = 'status-error';
+        return;
+      }
+
       // Re-enable button
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Current Page';
@@ -184,6 +200,9 @@ async function handleSaveArticle() {
         statusDiv.className = 'status-error';
       } else if (response && response.data && response.data.error) {
         statusDiv.textContent = `Error: ${response.data.error}`;
+        statusDiv.className = 'status-error';
+      } else if (response && response.error) {
+        statusDiv.textContent = response.error;
         statusDiv.className = 'status-error';
       } else {
         statusDiv.textContent = 'Error saving link';

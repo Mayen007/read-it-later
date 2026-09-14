@@ -70,8 +70,22 @@ async function makeAuthenticatedRequest(url, options = {}) {
   return response;
 }
 
+function isSavableUrl(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch (error) {
+    return false;
+  }
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'saveLink') {
+    if (!isSavableUrl(message.url)) {
+      sendResponse({ success: false, error: 'Only HTTP and HTTPS pages can be saved.' });
+      return false;
+    }
+
     const apiUrl = `${API_BASE_URL}/articles`;
 
     makeAuthenticatedRequest(apiUrl, {
