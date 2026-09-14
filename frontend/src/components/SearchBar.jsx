@@ -20,6 +20,9 @@ export default function SearchBar({
 
   return (
     <div className="relative flex items-center w-full">
+      <label htmlFor="article-search" className="sr-only">
+        Search articles
+      </label>
       <Search
         size={18}
         aria-hidden="true"
@@ -27,6 +30,7 @@ export default function SearchBar({
       />
       <input
         type="search"
+        id="article-search"
         name="search"
         aria-label="Search articles"
         value={local}

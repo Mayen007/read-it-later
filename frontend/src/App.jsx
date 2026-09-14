@@ -437,7 +437,11 @@ function AppContent() {
           </p>
         </header>
 
-        <main id="main-content" className="flex flex-col gap-6 sm:gap-8">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex flex-col gap-6 sm:gap-8"
+        >
           {/* Category Manager - Collapsible */}
           {showCategoryManager && (
             <CategoryManager

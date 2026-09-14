@@ -96,6 +96,9 @@ const AddArticleForm = ({ onAddArticle }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 mb-4">
+          <label htmlFor="article-url" className="sr-only">
+            Article URL
+          </label>
           <input
             id="article-url"
             name="article-url"
@@ -108,7 +111,11 @@ const AddArticleForm = ({ onAddArticle }) => {
             className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base transition-[border-color,box-shadow,opacity,background-color] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:bg-gray-50 disabled:opacity-60"
           />
           <div className="w-full lg:min-w-[220px] lg:max-w-[280px] lg:shrink-0">
+            <label htmlFor="article-categories" className="sr-only">
+              Categories
+            </label>
             <CreatableSelect
+              inputId="article-categories"
               isMulti
               options={options}
               value={selected}
@@ -147,6 +154,7 @@ const AddArticleForm = ({ onAddArticle }) => {
         {error && (
           <div
             role="alert"
+            aria-live="polite"
             className="text-red-500 text-xs sm:text-sm mt-2 p-2 sm:p-3 bg-red-50 border border-red-200 rounded"
           >
             {error}

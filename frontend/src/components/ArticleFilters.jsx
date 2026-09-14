@@ -47,7 +47,7 @@ const ArticleFilters = ({
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
           }`}
         >
-          <BookOpen size={16} className="shrink-0" />
+          <BookOpen size={16} aria-hidden="true" className="shrink-0" />
           <span className="whitespace-nowrap">All ({totalCount})</span>
         </button>
 
@@ -61,7 +61,7 @@ const ArticleFilters = ({
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
           }`}
         >
-          <Circle size={16} className="shrink-0" />
+          <Circle size={16} aria-hidden="true" className="shrink-0" />
           <span className="whitespace-nowrap">Unread ({unreadCount})</span>
         </button>
 
@@ -75,7 +75,7 @@ const ArticleFilters = ({
               : "bg-white border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-500"
           }`}
         >
-          <CheckCircle size={16} className="shrink-0" />
+          <CheckCircle size={16} aria-hidden="true" className="shrink-0" />
           <span className="whitespace-nowrap">Read ({readCount})</span>
         </button>
       </div>
@@ -85,7 +85,7 @@ const ArticleFilters = ({
         <div className="border-t border-gray-200 pt-3 sm:pt-4">
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
-              <Tag size={16} className="text-gray-500" />
+              <Tag size={16} aria-hidden="true" className="text-gray-500" />
               <span className="text-sm font-medium text-gray-700">
                 Filter by Category
               </span>
@@ -93,7 +93,7 @@ const ArticleFilters = ({
             {selectedCategory && (
               <button
                 onClick={() => onCategoryChange(null)}
-                className="text-sm text-blue-500 font-semibold hover:text-blue-600 hover:underline hover:cursor-pointer transition-colors"
+                className="text-sm text-blue-700 font-semibold hover:text-blue-800 hover:underline hover:cursor-pointer transition-colors"
               >
                 Clear filter
               </button>

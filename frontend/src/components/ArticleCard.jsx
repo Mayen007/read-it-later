@@ -211,7 +211,7 @@ const ArticleCard = ({
         ) : (
           <img
             src={article.thumbnail_url || "/logo-optimized.png"}
-            alt={article.title}
+            alt={article.title || "Article thumbnail"}
             width="640"
             height="360"
             loading="lazy"

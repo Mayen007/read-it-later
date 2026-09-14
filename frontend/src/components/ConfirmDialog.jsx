@@ -13,6 +13,7 @@ const ConfirmDialog = ({
   type = "danger", // "danger", "warning", "info"
 }) => {
   const dialogRef = useRef(null);
+  const firstActionRef = useRef(null);
   const previousFocusRef = useRef(null);
 
   // Handle escape key
@@ -20,7 +21,7 @@ const ConfirmDialog = ({
     if (!isOpen) return undefined;
 
     previousFocusRef.current = document.activeElement;
-    dialogRef.current?.focus();
+    firstActionRef.current?.focus();
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -58,13 +59,14 @@ const ConfirmDialog = ({
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={onCancel}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="dialog-title"
     >
       <div
         ref={dialogRef}
         tabIndex="-1"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-description"
         className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
@@ -100,13 +102,17 @@ const ConfirmDialog = ({
         </div>
 
         <div className="p-4 sm:p-6">
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+          <p
+            id="dialog-description"
+            className="text-sm sm:text-base text-gray-600 leading-relaxed"
+          >
             {message}
           </p>
         </div>
 
         <div className="p-4 sm:p-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
           <button
+            ref={firstActionRef}
             className="flex-1 px-4 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-[background-color,transform] cursor-pointer"
             onClick={onCancel}
           >

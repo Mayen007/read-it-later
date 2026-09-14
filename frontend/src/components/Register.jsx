@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { BookOpen, Lock, Zap } from "lucide-react";
 
@@ -9,6 +9,9 @@ export default function Register({ onSwitchToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   // Password requirement checks
   const passwordChecks = {
@@ -35,12 +38,14 @@ export default function Register({ onSwitchToLogin }) {
     // Validation
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      confirmPasswordRef.current?.focus();
       return;
     }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
+      passwordRef.current?.focus();
       return;
     }
 
@@ -49,6 +54,7 @@ export default function Register({ onSwitchToLogin }) {
 
     if (!result.success) {
       setError(result.error);
+      emailRef.current?.focus();
     }
 
     setLoading(false);
@@ -146,7 +152,10 @@ export default function Register({ onSwitchToLogin }) {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-2">
               <div>
-                <label htmlFor="email" className="sr-only">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Email address
                 </label>
                 <input
@@ -155,6 +164,9 @@ export default function Register({ onSwitchToLogin }) {
                   type="email"
                   autoComplete="email"
                   required
+                  ref={emailRef}
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? "register-error" : undefined}
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Email address"
                   value={email}
@@ -162,7 +174,10 @@ export default function Register({ onSwitchToLogin }) {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Password
                 </label>
                 <input
@@ -171,6 +186,9 @@ export default function Register({ onSwitchToLogin }) {
                   type="password"
                   autoComplete="new-password"
                   required
+                  ref={passwordRef}
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? "register-error" : undefined}
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={password}
@@ -178,7 +196,10 @@ export default function Register({ onSwitchToLogin }) {
                 />
               </div>
               <div>
-                <label htmlFor="confirm-password" className="sr-only">
+                <label
+                  htmlFor="confirm-password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Confirm Password
                 </label>
                 <input
@@ -187,6 +208,9 @@ export default function Register({ onSwitchToLogin }) {
                   type="password"
                   autoComplete="new-password"
                   required
+                  ref={confirmPasswordRef}
+                  aria-invalid={error === "Passwords do not match"}
+                  aria-describedby={error ? "register-error" : undefined}
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Confirm password"
                   value={confirmPassword}
@@ -259,6 +283,7 @@ export default function Register({ onSwitchToLogin }) {
 
             {error && (
               <div
+                id="register-error"
                 className="rounded-md bg-red-50 p-4"
                 role="alert"
                 aria-live="polite"
