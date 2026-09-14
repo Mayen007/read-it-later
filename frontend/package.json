@@ -33,8 +33,12 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "rollup-plugin-visualizer": "^6.0.5",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.4",
     "vite": "^7.1.2",
     "vite-plugin-imagemin": "^0.1.0"
+  },
+  "allowScripts": {
+    "sharp@0.35.4": true,
+    "esbuild@0.28.2": true
   }
 }
