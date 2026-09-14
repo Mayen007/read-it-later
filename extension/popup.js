@@ -54,6 +54,7 @@ async function clearTokens() {
 
 function setupEventListeners() {
   const saveBtn = document.getElementById('saveBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
   const authForm = document.getElementById('authForm');
   const authToggleLink = document.getElementById('authToggleLink');
   const viewSavedLink = document.getElementById('viewSaved');
@@ -61,6 +62,10 @@ function setupEventListeners() {
   // Save button handler
   if (saveBtn) {
     saveBtn.addEventListener('click', handleSaveArticle);
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
   }
 
   // Auth form handler
@@ -84,6 +89,15 @@ function setupEventListeners() {
       window.close();
     });
   }
+}
+
+async function handleLogout() {
+  await clearTokens();
+  document.getElementById('authForm').reset();
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('status').textContent = '';
+  document.getElementById('status').className = '';
+  showAuthSection();
 }
 
 let isRegisterMode = false;

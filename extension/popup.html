@@ -116,6 +116,25 @@
         transform: none;
       }
 
+      #logoutBtn {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 8px 16px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+      }
+
+      #logoutBtn:hover {
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+      }
+
       #status {
         margin-top: 16px;
         padding: 12px;
@@ -355,6 +374,7 @@
           </svg>
           Save Current Page
         </button>
+        <button id="logoutBtn" type="button">Sign Out</button>
       </div>
 
       <div id="status"></div>
