@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = READ_IT_LATER_CONFIG.environment === 'production'
+  ? READ_IT_LATER_CONFIG.productionApiBaseUrl
+  : READ_IT_LATER_CONFIG.apiBaseUrl;
 
 // Check authentication status on load
 document.addEventListener('DOMContentLoaded', async function () {

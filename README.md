@@ -116,7 +116,7 @@ The frontend will be available at `http://localhost:3000` (configured via Vite's
 3. Click "Load unpacked" and select the `extension` directory
 4. The extension will appear in your browser toolbar
 5. Sign in with your credentials to start saving articles
-6. For production, update the `API_BASE_URL` in `background.js` and `popup.js` to your deployed backend URL.
+6. The unpacked extension uses the local backend by default. For production, open `extension/config.js`, change `environment` to `production`, then reload the extension.
 
 **Note**: The extension stores authentication tokens in `chrome.storage.local` and automatically refreshes expired tokens.
 
@@ -218,7 +218,7 @@ The built files will be in the `frontend/dist` directory. Set `VITE_API_URL` env
 
 #### Extension
 
-Update `API_BASE_URL` in `background.js` and `popup.js` to your production backend URL (`https://readit-backend-r69u.onrender.com/api`). For Chrome Web Store distribution, zip the `extension/` folder and upload following Chrome's extension publishing guidelines.
+Open `extension/config.js`, change `environment` to `production`, and verify the production API URL before packaging. For Chrome Web Store distribution, zip the `extension/` folder and upload following Chrome's extension publishing guidelines.
 
 ## Contributing
 

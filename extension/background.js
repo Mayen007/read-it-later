@@ -1,4 +1,8 @@
-const API_BASE_URL = 'http://localhost:4000/api';
+importScripts('config.js');
+
+const API_BASE_URL = READ_IT_LATER_CONFIG.environment === 'production'
+  ? READ_IT_LATER_CONFIG.productionApiBaseUrl
+  : READ_IT_LATER_CONFIG.apiBaseUrl;
 
 async function getStoredToken() {
   return new Promise((resolve) => {
